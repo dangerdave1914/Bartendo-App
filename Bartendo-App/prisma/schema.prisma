@@ -1,0 +1,158 @@
+// Bartendo data model. Money is integer cents everywhere.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum FeeModel {
+  PATRON_PER_DRINK
+  VENUE_MONTHLY_CAP
+}
+
+enum TipPolicy {
+  DESIGNATED_DIRECT
+  POOLED
+}
+
+enum PosProvider {
+  STANDALONE
+  TOAST
+}
+
+enum OrderStatus {
+  NEW
+  MAKING
+  READY
+  PICKED_UP
+  VOIDED
+}
+
+enum TipDesignationKind {
+  MAKER
+  STAFF
+}
+
+model Venue {
+  id                    String      @id @default(cuid())
+  slug                  String      @unique
+  name                  String
+  theme                 Json
+  paceMinutes           Int         @default(30)
+  maxAlcoholicPerOrder  Int         @default(2)
+  feeModel              FeeModel    @default(PATRON_PER_DRINK)
+  monthlyFeeCapCents    Int         @default(15000)
+  tipPolicy             TipPolicy   @default(DESIGNATED_DIRECT)
+  stripeAccountId       String?     // Stripe Connect account; venue gets paid directly
+  posProvider           PosProvider @default(STANDALONE)
+  posLocationId         String?     // e.g. Toast restaurant GUID
+  createdAt             DateTime    @default(now())
+
+  staff     Staff[]
+  menu      MenuItem[]
+  checkins  Checkin[]
+  orders    Order[]
+}
+
+model Staff {
+  id            String   @id @default(cuid())
+  venueId       String
+  venue         Venue    @relation(fields: [venueId], references: [id])
+  displayName   String
+  posEmployeeId String?  // maps this bartender to their POS employee record for payroll
+  active        Boolean  @default(true)
+
+  shifts          Shift[]
+  ordersMade      Order[] @relation("maker")
+  tipsDesignated  Order[] @relation("designated")
+}
+
+model Shift {
+  id        String    @id @default(cuid())
+  staffId   String
+  staff     Staff     @relation(fields: [staffId], references: [id])
+  startedAt DateTime
+  endedAt   DateTime?
+}
+
+/// Minimal ID data on purpose. No license scan, no full number, no address.
+model Patron {
+  id            String    @id @default(cuid())
+  firstName     String
+  lastInitial   String
+  idLast4       String
+  idExpiresOn   DateTime
+  dateOfBirth   DateTime  // needed to re-check 21+ on future visits; consider storing only an "of age as of" date
+  checkins      Checkin[]
+}
+
+/// One night at one venue. Created when the door scans the ID.
+model Checkin {
+  id           String   @id @default(cuid())
+  patronId     String
+  patron       Patron   @relation(fields: [patronId], references: [id])
+  venueId      String
+  venue        Venue    @relation(fields: [venueId], references: [id])
+  verifiedOfAge Boolean
+  checkedInAt  DateTime @default(now())
+  closedAt     DateTime?
+  orders       Order[]
+}
+
+model MenuItem {
+  id          String  @id @default(cuid())
+  venueId     String
+  venue       Venue   @relation(fields: [venueId], references: [id])
+  name        String
+  description String?
+  priceCents  Int
+  alcoholic   Boolean
+  photoUrl    String? // should be a real photo of this venue's drink
+  posItemId   String? // e.g. Toast menu item GUID
+  available   Boolean @default(true)
+  lines       OrderLine[]
+}
+
+model Order {
+  id                  String             @id @default(cuid())
+  venueId             String
+  venue               Venue              @relation(fields: [venueId], references: [id])
+  checkinId           String
+  checkin             Checkin            @relation(fields: [checkinId], references: [id])
+  number              Int
+  status              OrderStatus        @default(NEW)
+  subtotalCents       Int
+  patronFeeCents      Int                @default(0)
+  tipCents            Int                @default(0)
+  tipDesignation      TipDesignationKind @default(MAKER)
+  designatedStaffId   String?
+  designatedStaff     Staff?             @relation("designated", fields: [designatedStaffId], references: [id])
+  makerStaffId        String?
+  maker               Staff?             @relation("maker", fields: [makerStaffId], references: [id])
+  hasAlcohol          Boolean
+  stripePaymentIntent String?
+  posOrderId          String?
+  createdAt           DateTime           @default(now())
+  startedAt           DateTime?
+  sealedAt            DateTime?
+  readyAt             DateTime?
+  pickedUpAt          DateTime?
+  voidedAt            DateTime?
+  lines               OrderLine[]
+
+  @@unique([venueId, number])
+  @@index([checkinId, createdAt])
+}
+
+model OrderLine {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id])
+  menuItemId     String
+  menuItem       MenuItem @relation(fields: [menuItemId], references: [id])
+  qty            Int
+  unitPriceCents Int      // price at time of order
+}

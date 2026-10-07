@@ -1,0 +1,164 @@
+{
+  "how_to_use": "Paste this entire file into a new ChatGPT or Claude chat and type: Run this questionnaire. Answer by typing or by voice. Say 'skip' or 'don't know' anytime, 'pause' to stop and get a progress summary, and 'finish' to wrap up early.",
+  "title": "Bartendo Venue Operations & Red Tape Questionnaire",
+  "prepared_for": "David Clark, founder of Bartendo",
+  "respondent_role": "Advisor with hands-on experience running bars and nightlife venues",
+  "about_bartendo": "Bartendo is a web app for bars. The door scans a patron's ID and checks them in. Patrons then order and pay from their phone, and pick up a tamper-sealed drink at a pickup spot by showing a claim ticket with their name and order number. Bartenders work a queue (New, Making, Ready, Picked up). Pacing rules limit alcoholic orders (e.g., minimum minutes between orders, max drinks per order). Patrons can tip whoever makes the drink or designate a specific bartender (their regular). Tips are paid to the venue and flow through the venue's payroll, with a per-bartender tip report. Plan is to connect to Toast so app orders land in the venue's POS. Payments run through Stripe Connect so each venue is paid directly. Fee model is undecided: $1 per drink paid by the patron, or a venue fee capped at $150/month. Each venue gets its own branded look on the patron side.",
+
+  "instructions_for_ai": [
+    "You are conducting a structured interview on behalf of David Clark. Your job is to collect accurate, specific answers from the respondent, one question at a time, and then produce a consolidated report David can act on.",
+    "Before the first question, greet the respondent in two or three sentences: explain this helps David get Bartendo ready for a beta at real venues, that there are about 60 questions across 11 sections, that it takes roughly 30 to 45 minutes, that voice answers are fine, and that they can say skip, don't know, pause, or finish anytime.",
+    "Ask exactly ONE question per message, in the order given. Show the section name when a new section starts and a progress marker on every question, like (Q12 of 60).",
+    "You may add the question's 'why' line in one short sentence if it helps the respondent understand what's being asked. Keep your messages short.",
+    "If an answer is vague, ask at most ONE clarifying follow-up, using the question's 'follow_up' if provided. Then move on. Do not interrogate.",
+    "If the respondent says skip or don't know, record the answer as UNKNOWN, ask once who would know (a person, role, or agency), record that, and move on.",
+    "If an earlier answer makes a later question irrelevant (for example, they don't use Toast), skip it and record NOT APPLICABLE with the reason.",
+    "If the respondent volunteers useful information that belongs to a different question, record it under that question and don't ask it again later; just confirm briefly when you reach it.",
+    "Do not give legal, tax, or financial advice, and do not argue with answers. You are collecting information, not evaluating it. If they ask you a legal question, say it's going on David's list for an attorney and continue.",
+    "Never invent or assume answers. Record what the respondent said, in their words where it matters.",
+    "Do not collect Social Security numbers, bank or card numbers, ID numbers, passwords, API keys, or anyone's personal financial details. If the respondent starts to share any of these, tell them not to and don't record it.",
+    "If the respondent says pause, give a short summary of answers so far and tell them to say 'continue' to resume. If the conversation gets very long, offer a progress summary every 20 questions so nothing is lost.",
+    "When all questions are done (or the respondent says finish), produce the FINAL REPORT exactly as described in 'final_report_format'. Then tell the respondent: copy the entire report and send it to David by text or email. If you have an email or document tool available in this chat, offer to draft the email to David instead, but only send if the respondent explicitly confirms."
+  ],
+
+  "sections": [
+    {
+      "id": "A",
+      "name": "You and your venues",
+      "questions": [
+        {"id": "A1", "priority": "important", "q": "What's your background with bars and nightlife? Roles you've held and roughly how many years.", "why": "Tells David how to weigh your answers."},
+        {"id": "A2", "priority": "critical", "q": "Which venues could realistically beta test Bartendo? For each: name, city/state, type (dive, cocktail bar, club, sports bar, etc.), and your relationship to the owner or manager.", "follow_up": "Which ONE would you pick first, and why?"},
+        {"id": "A3", "priority": "critical", "q": "For the venue you'd pick first: who has the authority to say yes to a pilot (owner, GM, ownership group)? Name and role is fine; no personal contact details needed here."},
+        {"id": "A4", "priority": "important", "q": "For that first venue: rough capacity, busiest nights, and peak hours.", "why": "Sizes the pilot and tells us when the app has to perform."},
+        {"id": "A5", "priority": "helpful", "q": "On a busy night there, about how many drinks are served per hour at peak, and how many bartenders are working?"}
+      ]
+    },
+    {
+      "id": "B",
+      "name": "Door and ID checks",
+      "questions": [
+        {"id": "B1", "priority": "critical", "q": "How does the door check IDs today? Visual only, a handheld scanner, a scanning app, UV light? If there's a device, what brand or model?", "follow_up": "Does that device store scanned data or export it anywhere?"},
+        {"id": "B2", "priority": "important", "q": "Do these venues let under-21 guests in (18+ nights, all ages)? If so, how are they marked (wristband, stamp, X on hand)?"},
+        {"id": "B3", "priority": "important", "q": "What happens today when the door catches a fake ID? Is it confiscated, logged, police called?"},
+        {"id": "B4", "priority": "important", "q": "How often do underage people get served anyway, and how does it usually happen (handoffs from friends, fakes that pass, buying at the bar)?", "why": "Shows which gaps Bartendo has to close first."},
+        {"id": "B5", "priority": "helpful", "q": "Would the door staff be willing to take an extra 10 to 15 seconds per guest to check them into the app? What would make that a dealbreaker?"}
+      ]
+    },
+    {
+      "id": "C",
+      "name": "Alcohol law and ABC",
+      "questions": [
+        {"id": "C1", "priority": "critical", "q": "What kind of liquor license do these venues hold (on-premises, restaurant, club, lounge, etc.)? Any special conditions on the license?"},
+        {"id": "C2", "priority": "critical", "q": "In your experience, what rules do ABC agents actually enforce during service? Drink limits per person, limits on shots or doubles, last call timing, anything else?", "follow_up": "Are any of those written into law or the license, versus just enforcement habits?"},
+        {"id": "C3", "priority": "critical", "q": "Do you know of any rule about how many drinks one person can order or hold at a time, or how soon they can order again?", "why": "Bartendo's pacing settings need to match real rules."},
+        {"id": "C4", "priority": "critical", "q": "Do you think ABC would need to approve or be told about app-based ordering inside a venue? Have you seen any venue run something similar and deal with ABC about it?"},
+        {"id": "C5", "priority": "critical", "q": "Do you have a contact at the Alabama ABC Board, or an attorney who handles alcohol licensing, that David could ask directly?", "why": "Several open questions need an official answer."},
+        {"id": "C6", "priority": "important", "q": "Have any of these venues had ABC violations or citations? Roughly what for? No names of individuals needed.", "why": "Shows where enforcement pressure is."},
+        {"id": "C7", "priority": "important", "q": "When a guest is cut off for being visibly intoxicated, how does that work today, and who decides?", "follow_up": "How should a bartender be able to cut someone off inside the app?"},
+        {"id": "C8", "priority": "helpful", "q": "Are there any other states where your venue contacts operate (Florida, Tennessee, etc.) where you know the rules differ in a way that matters here?"}
+      ]
+    },
+    {
+      "id": "D",
+      "name": "Bar operations and workflow",
+      "questions": [
+        {"id": "D1", "priority": "critical", "q": "At the first venue, where could a pickup spot for app orders go? Is there an end of the bar or a service station that could work without blocking walk-up customers?"},
+        {"id": "D2", "priority": "critical", "q": "How should app orders be prioritized against walk-up orders? Strict first-in-first-out, alternate, a dedicated app bartender on busy nights?"},
+        {"id": "D3", "priority": "important", "q": "Would bartenders accept putting a tamper-evident seal sticker on each app drink? What would slow them down about it?", "follow_up": "What kinds of drinks would be hard to seal (frozen, garnished, beer bottles, buckets)?"},
+        {"id": "D4", "priority": "important", "q": "How will bartenders react to this overall? What would make them champion it, and what would make them hate it?"},
+        {"id": "D5", "priority": "important", "q": "How does the venue handle running out of something mid-night (86'd items)? Who updates that, and how fast?", "why": "The app menu has to stop selling things that are gone."},
+        {"id": "D6", "priority": "important", "q": "How do open tabs work today? Card held at the bar, card on file, cash? What problems come up closing tabs (walkouts, forgotten cards)?"},
+        {"id": "D7", "priority": "important", "q": "What's the current policy when a guest says a drink is wrong or bad? Remake, refund, manager decision?"},
+        {"id": "D8", "priority": "helpful", "q": "Do these venues sell bottle service, buckets, pitchers, or shot specials? How should those work in an app with pacing limits?"},
+        {"id": "D9", "priority": "helpful", "q": "Should the app support ordering for a group, for example one person buying a round for friends? How do you see that working with ID checks and pacing?"}
+      ]
+    },
+    {
+      "id": "E",
+      "name": "Tips and payroll",
+      "questions": [
+        {"id": "E1", "priority": "critical", "q": "How are credit card tips paid to bartenders today? Cash at end of shift, on the paycheck, a payout card?"},
+        {"id": "E2", "priority": "critical", "q": "Are tips pooled? If so, who's in the pool (bartenders, barbacks, servers, security) and how is it split?", "follow_up": "Would a tip a regular designates to one bartender be pooled too?"},
+        {"id": "E3", "priority": "critical", "q": "Who runs payroll for these venues? Toast Payroll, another provider like ADP or Gusto, an accountant, the owner by hand?"},
+        {"id": "E4", "priority": "critical", "q": "In what format would payroll want a tip report? Per shift or per pay period, a CSV file, something entered into Toast directly?"},
+        {"id": "E5", "priority": "important", "q": "If a regular designates a tip to a bartender who clocks out before the drink is made, who should get the tip: the designated bartender or the one who made it?"},
+        {"id": "E6", "priority": "important", "q": "Do bartenders tip out barbacks or others at the end of the night? How?", "why": "The tip report may need to support tip-outs."},
+        {"id": "E7", "priority": "helpful", "q": "Do the venues pay bartenders the tipped minimum wage plus tips, or a higher base? No individual pay amounts needed, just the structure."}
+      ]
+    },
+    {
+      "id": "F",
+      "name": "Toast and payments",
+      "questions": [
+        {"id": "F1", "priority": "critical", "q": "Which venues use Toast, and which use something else (Square, Clover, Aloha, etc.)?"},
+        {"id": "F2", "priority": "critical", "q": "Who at the first venue has admin access to Toast and could add an integration from Toast's integration marketplace?"},
+        {"id": "F3", "priority": "important", "q": "What other Toast integrations or add-ons do they already use (online ordering, loyalty, scheduling, payroll)?"},
+        {"id": "F4", "priority": "critical", "q": "Do these venues use Toast's own card processing? Would the owner accept app payments being processed through Stripe instead, deposited directly to the venue?", "follow_up": "What processing rate do they pay now, roughly, if you know?"},
+        {"id": "F5", "priority": "important", "q": "Do they use Toast's own mobile order-and-pay or any similar app now? Why or why not, and how did it go?"},
+        {"id": "F6", "priority": "important", "q": "How important is it that app orders show up inside Toast (for sales reports, inventory, tax), versus a separate report from Bartendo during a short pilot?"}
+      ]
+    },
+    {
+      "id": "G",
+      "name": "Pricing and money",
+      "questions": [
+        {"id": "G1", "priority": "critical", "q": "Which fee model would owners accept more easily: $1 per drink added to the patron's bill, or a venue fee capped at $150 per month? Why?"},
+        {"id": "G2", "priority": "important", "q": "How do patrons at these venues react to added service fees? Any pushback you've seen?"},
+        {"id": "G3", "priority": "important", "q": "What do these venues already pay monthly for software like this (POS add-ons, ordering apps, loyalty)? Ballpark is fine."},
+        {"id": "G4", "priority": "helpful", "q": "What result would make an owner say it's worth paying for: more drinks sold, shorter lines, fewer walkouts, fewer underage incidents, something else?"}
+      ]
+    },
+    {
+      "id": "H",
+      "name": "Liability and insurance",
+      "questions": [
+        {"id": "H1", "priority": "critical", "q": "What liquor liability or dram shop insurance do these venues carry? Do you know if their insurer would care about app ordering?", "follow_up": "Would the owner be willing to ask their insurance agent?"},
+        {"id": "H2", "priority": "critical", "q": "What would an owner need in a pilot agreement to feel safe: who's responsible for overserving, data handling, refunds, what happens if the app goes down mid-shift?"},
+        {"id": "H3", "priority": "important", "q": "How common are card chargebacks or disputed tabs, and how are they handled now?"},
+        {"id": "H4", "priority": "important", "q": "Have you seen incidents (fights, drink tampering, overserving claims) where proof of who ordered what and when would have helped?", "why": "Bartendo's records could be a selling point or a liability."}
+      ]
+    },
+    {
+      "id": "I",
+      "name": "Competition",
+      "questions": [
+        {"id": "I1", "priority": "important", "q": "What apps or systems have you seen bars use for mobile ordering or tabs (Toast mobile order and pay, SmartTab, others)? What worked and what didn't?"},
+        {"id": "I2", "priority": "important", "q": "Why do you think most bars still don't use phone ordering?"},
+        {"id": "I3", "priority": "helpful", "q": "What would make Bartendo clearly better than what venues can already turn on in Toast?"}
+      ]
+    },
+    {
+      "id": "J",
+      "name": "Beta plan",
+      "questions": [
+        {"id": "J1", "priority": "critical", "q": "What would a realistic first pilot look like: which venue, which night of the week, and how many weeks?"},
+        {"id": "J2", "priority": "important", "q": "What would success look like to the owner after the pilot? Name two or three measurable things."},
+        {"id": "J3", "priority": "important", "q": "How much training time could bartenders and door staff realistically get before the first night?"},
+        {"id": "J4", "priority": "important", "q": "Would the venue want the pilot free, discounted, or paid? Any incentive they'd expect?"},
+        {"id": "J5", "priority": "important", "q": "How should the venue tell patrons about the app on pilot nights (signs, door staff, QR codes on tables)?"},
+        {"id": "J6", "priority": "helpful", "q": "When could a pilot realistically start, considering the venue's calendar and busy seasons?"}
+      ]
+    },
+    {
+      "id": "K",
+      "name": "Wrap-up",
+      "questions": [
+        {"id": "K1", "priority": "important", "q": "What's the biggest risk you see that could kill this idea?"},
+        {"id": "K2", "priority": "important", "q": "What's the one feature that would make owners say yes fastest?"},
+        {"id": "K3", "priority": "helpful", "q": "Anything we didn't ask that David needs to know?"}
+      ]
+    }
+  ],
+
+  "final_report_format": {
+    "instructions": "Produce the report in this order, with these headings. Be concise and factual; use the respondent's words where precision matters. Do not add advice or opinions.",
+    "parts": [
+      {"heading": "1. Summary", "content": "Five to eight sentences: the recommended first venue, how it operates, and the most important things David learned."},
+      {"heading": "2. Blockers and red flags", "content": "Every answer that could stop or delay the beta or require a design change, especially from sections C, E, F, and H. One line each, with the question ID."},
+      {"heading": "3. Unknowns and who to ask", "content": "Every question answered UNKNOWN, with the person, role, or agency the respondent said would know."},
+      {"heading": "4. Answers by section", "content": "Each section heading, then each question ID with a short version of the question and the answer. Mark NOT APPLICABLE and UNKNOWN clearly."},
+      {"heading": "5. Machine-readable answers", "content": "A single JSON code block with this shape: {\"respondent\": \"<name if given>\", \"completed_on\": \"<date>\", \"status\": \"complete\" or \"partial\", \"answers\": {\"A1\": {\"answer\": \"...\", \"status\": \"answered\" | \"unknown\" | \"not_applicable\" | \"skipped\", \"who_would_know\": \"...\" or null}, ...}}"}
+    ],
+    "closing_message_to_respondent": "Thanks. Copy everything above and send it to David by text or email. That's all he needs."
+  }
+}

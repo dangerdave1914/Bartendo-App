@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bar ordering prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Serif+Display&family=Work+Sans:wght@400;600;700&family=Permanent+Marker&family=Archivo:wght@400;600;800&family=Italiana&family=Jost:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2EDE2; --panel:#FBF8F1; --line:#D9D0BD; --text:#1D2B27; --muted:#5E6B64;
+  --accent:#1E4A40; --on-accent:#FBF8F1; --brass:#8E6A1F; --cherry:#B23A2E; --ok:#2F6B4F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10261F; --panel:#173329; --line:#2A4A3F; --text:#ECE4D2; --muted:#9FB5AA;
+  --accent:#D6AE5E; --on-accent:#10261F; --brass:#D6AE5E; --cherry:#E0685B; --ok:#7CC39B;}}
+:root[data-theme="dark"]{
+  --bg:#10261F; --panel:#173329; --line:#2A4A3F; --text:#ECE4D2; --muted:#9FB5AA;
+  --accent:#D6AE5E; --on-accent:#10261F; --brass:#D6AE5E; --cherry:#E0685B; --ok:#7CC39B;}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:.75rem 1.25rem;flex-wrap:wrap;
+  padding:1rem 1.25rem .75rem;max-width:1200px;margin:0 auto}
+.top h1{font-size:1.35rem;font-weight:800;margin:0;letter-spacing:-.01em}
+.venues{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.venues span{color:var(--muted);font-size:.9rem;margin-right:.2rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.25rem 0 1rem}
+.chips button,.venues button{padding:.45rem .8rem;border-radius:99px;border:1px solid var(--line);background:none}
+.chips button[aria-pressed="true"],.venues button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.clock{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.tabs{display:none;gap:.25rem;padding:0 1.25rem .75rem;max-width:1200px;margin:0 auto}
+.tabs button{flex:1;padding:.6rem;border:1px solid var(--line);background:var(--panel);border-radius:10px;font-weight:600}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.badge{display:inline-block;min-width:1.3em;padding:0 .35em;margin-left:.35em;border-radius:99px;background:var(--cherry);color:#fff;font-size:.8em}
+.panes{display:grid;grid-template-columns:400px 1fr;grid-template-areas:"patron bar" "patron venue";
+  gap:1.25rem;padding:0 1.25rem 2rem;max-width:1200px;margin:0 auto;align-items:start}
+.pane{min-width:0}
+[data-pane="patron"]{grid-area:patron;position:sticky;top:1rem}
+[data-pane="bar"]{grid-area:bar}
+[data-pane="venue"]{grid-area:venue}
+@media (max-width:900px){
+  .tabs{display:flex}
+  .panes{grid-template-columns:1fr;grid-template-areas:none}
+  .pane{grid-area:auto !important;position:static !important;display:none}
+  .pane.active{display:block}
+}
+h2{font-size:1.6rem;line-height:1.1;margin:.25rem 0 .5rem;font-weight:800;letter-spacing:-.015em}
+h3{font-size:1.05rem;margin:0 0 .5rem;font-weight:700}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+.ghost{background:none;border:1px solid var(--line);border-radius:10px;padding:.5rem .8rem}
+
+/* ---------- Patron phone: everything below reads from the venue theme (--t-*) ---------- */
+.phone{position:relative;overflow:hidden;background:var(--t-bg);color:var(--t-text);font-family:var(--t-body);
+  border-radius:32px;border:1px solid var(--line);min-height:680px;display:flex;flex-direction:column;
+  padding:1.1rem 1.1rem 1.2rem;background-image:var(--t-bgimg);transition:background-color .4s}
+.phone *{border-color:var(--t-line)}
+.p-head{display:flex;justify-content:space-between;font-size:.8rem;color:var(--t-muted);margin-bottom:.5rem;position:relative;z-index:1}
+.p-body{display:flex;flex-direction:column;flex:1;position:relative;z-index:1}
+.phone h2{font-family:var(--t-display);font-weight:400;font-size:2.1rem;letter-spacing:0;line-height:1.05;margin:.2rem 0 .6rem}
+.phone h3{font-family:var(--t-body);font-weight:600;font-size:.95rem;color:var(--t-muted)}
+.p-muted{color:var(--t-muted)}
+.p-btn{display:block;width:100%;padding:.95rem 1rem;border:0;border-radius:var(--t-radius);background:var(--t-accent);color:var(--t-on);
+  font-weight:700;font-size:1.05rem;font-family:var(--t-body)}
+.p-btn:disabled{opacity:.4;cursor:not-allowed}
+.p-link{background:none;border:0;padding:0;text-decoration:underline;color:var(--t-muted);font-family:var(--t-body)}
+.p-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.25rem 0 1rem}
+.p-chips button{padding:.45rem .85rem;border-radius:var(--t-radius);border:1px solid var(--t-line);background:none;font-family:var(--t-body)}
+.p-chips button[aria-pressed="true"]{background:var(--t-accent);color:var(--t-on);border-color:var(--t-accent)}
+.hero{margin:0 -1.1rem 1rem;padding:1.4rem 1.1rem 1.2rem;position:relative}
+.hero .kind{font-size:.85rem;color:var(--t-muted)}
+.hero .vname{font-family:var(--t-display);font-size:3rem;line-height:.95;margin:.3rem 0 .5rem;overflow-wrap:anywhere}
+.hero p{margin:0;color:var(--t-muted);max-width:30ch}
+.idcard{background:var(--t-surface);border:1px solid var(--t-line);border-radius:var(--t-radius);padding:.9rem;margin:.25rem 0 1rem;
+  display:grid;grid-template-columns:52px 1fr;gap:.8rem;align-items:center}
+.idcard .face{width:52px;height:66px;border-radius:6px;background:linear-gradient(160deg,#c8bca3,#8d8069)}
+.idcard b{display:block;font-size:1.1rem}
+.pill{display:inline-block;padding:.12rem .55rem;border-radius:99px;font-size:.78rem;font-weight:600;margin-top:.25rem}
+.pill.ok{background:color-mix(in srgb,#3FA46A 22%,transparent);color:color-mix(in srgb,#3FA46A 70%,var(--t-text))}
+.pill.no{background:color-mix(in srgb,#E0453A 22%,transparent);color:color-mix(in srgb,#E0453A 75%,var(--t-text))}
+.p-notice{border-left:3px solid #E0453A;padding:.5rem .75rem;margin:.75rem 0;background:color-mix(in srgb,#E0453A 12%,transparent);border-radius:0 8px 8px 0;font-size:.92rem}
+.p-notice.good{border-color:var(--t-accent);background:color-mix(in srgb,var(--t-accent) 18%,transparent)}
+.menu{list-style:none;margin:0 0 1rem;padding:0;flex:1}
+.menu li{display:grid;grid-template-columns:46px 1fr auto;gap:.8rem;align-items:center;padding:.75rem 0;border-bottom:1px solid var(--t-line)}
+.menu li.off{opacity:.35}
+.menu .name{font-weight:700;font-size:1.02rem}
+.menu .ing{font-size:.8rem;color:var(--t-muted);line-height:1.3}
+.menu .price{font-size:.88rem;font-variant-numeric:tabular-nums;margin-top:.1rem}
+.glass{--c:#ccc;width:28px;height:42px;margin:0 auto;border:2px solid var(--t-muted);border-top:0;border-radius:0 0 5px 5px;
+  background:linear-gradient(to top,var(--c) 74%,transparent 74%)}
+.glass.rocks{width:36px;height:30px;border-radius:0 0 8px 8px}
+.glass.pint{width:28px;height:46px;border-radius:0 0 4px 4px;clip-path:polygon(0 0,100% 0,88% 100%,12% 100%)}
+.glass.coupe{width:42px;height:22px;border-radius:0 0 50% 50%}
+.glass.wine{width:34px;height:30px;border-radius:0 0 50% 50%}
+.glass.flute{width:18px;height:46px;border-radius:0 0 9px 9px}
+.glass.shot{width:22px;height:26px;border-radius:0 0 3px 3px}
+.glass.can{width:26px;height:42px;border-top:2px solid var(--t-muted);border-radius:5px;background:var(--c)}
+.stepper{display:flex;align-items:center;gap:.4rem}
+.stepper button{width:34px;height:34px;border-radius:50%;border:1px solid var(--t-line);background:none;font-weight:700}
+.stepper button:last-child{background:var(--t-accent);color:var(--t-on);border-color:var(--t-accent)}
+.stepper button:disabled{opacity:.4}
+.stepper span{min-width:1.2em;text-align:center;font-variant-numeric:tabular-nums}
+.rows{margin:.5rem 0 1rem}
+.row{display:flex;justify-content:space-between;gap:1rem;padding:.3rem 0;font-variant-numeric:tabular-nums}
+.row.total{border-top:1px solid var(--t-line);margin-top:.3rem;padding-top:.6rem;font-weight:800;font-size:1.1rem}
+.ticket{background:var(--t-ticket);color:var(--t-ticket-ink);border-radius:var(--t-radius);padding:1.4rem 1.2rem 1.2rem;margin:.5rem 0 1rem;
+  -webkit-mask:radial-gradient(circle 11px at 0 64%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 64%,transparent 98%,#000) right/51% 100% no-repeat;
+  mask:radial-gradient(circle 11px at 0 64%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 64%,transparent 98%,#000) right/51% 100% no-repeat}
+.ticket .num{font-size:.9rem;opacity:.75;font-variant-numeric:tabular-nums}
+.ticket .who{font-family:var(--t-display);font-size:2.8rem;line-height:1;margin:.25rem 0 .8rem;overflow-wrap:anywhere}
+.ticket .tear{border-top:2px dashed currentColor;opacity:.35;margin:1rem -1.2rem .9rem}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:.35rem;font-size:.95rem}
+.steps li{display:flex;gap:.6rem;align-items:center;opacity:.4}
+.steps li.done,.steps li.now{opacity:1}
+.steps li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid currentColor;flex:none}
+.steps li.done::before{background:currentColor}
+.steps li.now::before{background:var(--t-accent);border-color:var(--t-accent)}
+
+/* Venue signatures */
+[data-venue="agave"] .hero{padding-top:2.6rem}
+[data-venue="agave"] .hero::before{content:"";position:absolute;left:0;right:0;top:0;height:30px;
+  background:repeating-linear-gradient(90deg,#E4572E 0 48px,#F2B632 48px 96px,#2EC4B6 96px 144px,#F25F8B 144px 192px);
+  -webkit-mask:radial-gradient(circle 9px at 12px 100%,transparent 96%,#000) 0 0/24px 100%;mask:radial-gradient(circle 9px at 12px 100%,transparent 96%,#000) 0 0/24px 100%}
+[data-venue="dive"] .phone h2,[data-venue="dive"] .hero .vname{transform:rotate(-2deg);transform-origin:left}
+[data-venue="dive"] .hero{border-bottom:3px solid var(--t-text);margin-bottom:1.2rem}
+[data-venue="dive"] .ticket .who{transform:rotate(-2deg)}
+[data-venue="roof"] .idcard,[data-venue="roof"] .p-notice{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+[data-venue="roof"] .hero{padding-bottom:3.4rem}
+[data-venue="roof"] .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46px;background:rgba(10,8,30,.55);
+  clip-path:polygon(0 100%,0 60%,6% 60%,6% 30%,12% 30%,12% 55%,18% 55%,18% 10%,22% 10%,22% 50%,30% 50%,30% 35%,36% 35%,36% 70%,44% 70%,44% 20%,48% 0,52% 20%,52% 60%,60% 60%,60% 40%,68% 40%,68% 65%,74% 65%,74% 25%,80% 25%,80% 55%,88% 55%,88% 38%,94% 38%,94% 62%,100% 62%,100% 100%)}
+@media (prefers-reduced-motion:no-preference){
+  .phone .p-body{animation:enter .45s ease-out}
+  @keyframes enter{from{opacity:0;transform:translateY(10px)}}
+  .ticket.ready{animation:ring 1.6s ease-in-out infinite}
+  @keyframes ring{50%{filter:drop-shadow(0 0 14px var(--t-accent))}}
+}
+
+/* ---------- Operator side (bar + venue) stays neutral ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.1rem}
+.bar-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+@media (max-width:640px){.board{grid-template-columns:1fr}}
+.col h3{display:flex;justify-content:space-between;color:var(--muted);font-weight:600;font-size:.95rem}
+.order{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:.75rem;margin-bottom:.6rem}
+.order .who{font-weight:800;font-size:1.2rem;line-height:1.1}
+.order ul{margin:.4rem 0;padding-left:1.1rem;font-size:.92rem}
+.order .meta{font-size:.8rem;color:var(--muted)}
+.order button{margin-top:.5rem;width:100%;padding:.55rem;border-radius:10px;border:0;background:var(--accent);color:var(--on-accent);font-weight:700}
+.order button:disabled{opacity:.4;cursor:not-allowed}
+.order label{display:flex;gap:.5rem;align-items:center;font-size:.9rem;margin-top:.4rem}
+.empty{color:var(--muted);font-size:.9rem;padding:.5rem 0}
+.card .row{border-color:var(--line)}
+.field{display:grid;gap:.3rem;margin-bottom:1rem}
+.field select{padding:.5rem;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+.meter{height:10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin:.4rem 0}
+.meter i{display:block;height:100%;background:var(--brass)}
+.venue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 1.5rem}
+.swatches{display:flex;gap:.35rem;margin:.3rem 0 .8rem}
+.swatches i{width:26px;height:26px;border-radius:6px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Bar ordering prototype</h1>
+  <div class="venues" id="venues"></div>
+  <span class="clock" id="clock"></span>
+</header>
+<nav class="tabs" id="tabs" aria-label="Views"></nav>
+<main class="panes">
+  <section class="pane" data-pane="patron" aria-label="Patron app"><div class="phone" id="patron"></div></section>
+  <section class="pane" data-pane="bar" aria-label="Bartender queue"><div class="card" id="bar"></div></section>
+  <section class="pane" data-pane="venue" aria-label="Venue settings"><div class="card" id="venue"></div></section>
+</main>
+<script>
+/* Each venue = settings + staff + menu + a theme. The app logic below never changes between venues. */
+const VENUES=[
+ {key:'agave',name:'Casa Agave',kind:'Tequila and mezcal bar',tagline:'Tequila, mezcal, and a patio that stays open late.',
+  staff:['Lupe','Marco','Dani'],paceMin:30,perOrder:2,feeModel:'patron',cap:150,feesThisMonth:112,
+  theme:{display:"'DM Serif Display',Georgia,serif",body:"'Work Sans',system-ui,sans-serif",bg:'#17285A',surface:'#21356E',text:'#FBF1DC',
+   muted:'#B9C2DE',line:'#34498A',accent:'#F2B632',on:'#17285A',ticket:'#FBF1DC',ticketInk:'#17285A',radius:'6px',bgimg:'none'},
+  menu:[
+   {id:'pal',name:'Paloma',price:11,color:'#F0A69C',ing:'Blanco tequila, grapefruit, lime, salted rim',glass:''},
+   {id:'mar',name:'Casa Margarita',price:12,color:'#D6CF6E',ing:'Reposado, orange liqueur, fresh lime, tajín rim',glass:'rocks'},
+   {id:'mng',name:'Mezcal Negroni',price:14,color:'#A3262A',ing:'Mezcal, Campari, sweet vermouth, orange peel',glass:'rocks'},
+   {id:'mic',name:'Michelada',price:9,color:'#B5452B',ing:'Mexican lager, lime, hot sauce, chile salt',glass:'pint'},
+   {id:'rep',name:'Reposado, neat',price:10,color:'#D08A2E',ing:'1.5 oz pour, orange slice on the side',glass:'shot'},
+   {id:'agu',name:'Agua de Jamaica',price:5,color:'#8E1B3A',ing:'Hibiscus, cane sugar, lime. No alcohol.',glass:'',na:true}]},
+ {key:'dive',name:'The Rusty Nail',kind:'Dive bar',tagline:'Cold beer, loud jukebox, no dress code.',
+  staff:['Big Mike','Rhonda','Tee'],paceMin:15,perOrder:3,feeModel:'venue',cap:150,feesThisMonth:88,
+  theme:{display:"'Permanent Marker','Comic Sans MS',cursive",body:"'Archivo',system-ui,sans-serif",bg:'#E8DCC4',surface:'#F3EAD6',text:'#1F1A17',
+   muted:'#6B5E50',line:'#CDBE9F',accent:'#C8201E',on:'#FFF3E0',ticket:'#C8201E',ticketInk:'#FFF3E0',radius:'2px',
+   bgimg:'repeating-linear-gradient(0deg,rgba(0,0,0,.025) 0 2px,transparent 2px 5px)'},
+  menu:[
+   {id:'can',name:'Domestic can',price:4,color:'#C9CED3',ing:'Ice cold, your pick from the cooler',glass:'can'},
+   {id:'boil',name:'Boilermaker',price:8,color:'#E2B044',ing:'Draft beer and a shot of well whiskey',glass:'pint'},
+   {id:'wc',name:'Whiskey & Coke',price:7,color:'#5A2E1A',ing:'Well whiskey, Coca-Cola, lime if you ask',glass:''},
+   {id:'rn',name:'Rusty Nail',price:9,color:'#B8761F',ing:'Scotch, Drambuie, one big rock',glass:'rocks'},
+   {id:'vs',name:'Vodka soda',price:6,color:'#E7EEF0',ing:'Well vodka, soda, lime',glass:''},
+   {id:'rb',name:'Root beer',price:3,color:'#3D1F12',ing:'Glass bottle. No alcohol.',glass:'can',na:true}]},
+ {key:'roof',name:'Nineteen Up',kind:'Rooftop lounge',tagline:'Nineteen floors up. Cocktails until the skyline goes dark.',
+  staff:['Nia','Theo','Ren'],paceMin:30,perOrder:2,feeModel:'patron',cap:150,feesThisMonth:140,
+  theme:{display:"'Italiana',Georgia,serif",body:"'Jost',system-ui,sans-serif",bg:'#231D44',surface:'rgba(255,255,255,.08)',text:'#F6EEF2',
+   muted:'#C9BCD6',line:'rgba(255,255,255,.16)',accent:'#F5C28B',on:'#231D44',ticket:'rgba(255,248,240,.95)',ticketInk:'#231D44',radius:'22px',
+   bgimg:'linear-gradient(172deg,#1E1A3F 0%,#4A3268 55%,#B8697A 100%)'},
+  menu:[
+   {id:'f75',name:'French 75',price:15,color:'#EFE2A6',ing:'Gin, lemon, sugar, topped with brut',glass:'flute'},
+   {id:'esp',name:'Espresso Martini',price:16,color:'#4A2C1C',ing:'Vodka, coffee liqueur, fresh espresso',glass:'coupe'},
+   {id:'ape',name:'Aperol Spritz',price:14,color:'#F07A2E',ing:'Aperol, prosecco, soda, orange',glass:'wine'},
+   {id:'sof',name:'Smoked Old Fashioned',price:18,color:'#C9822B',ing:'Bourbon, demerara, bitters, applewood smoke',glass:'rocks'},
+   {id:'ros',name:'Rosé, by the glass',price:13,color:'#F4B6B0',ing:'Provence, dry and chilled',glass:'wine'},
+   {id:'yuz',name:'Yuzu Spritz',price:9,color:'#F3E27A',ing:'Yuzu, elderflower, soda. No alcohol.',glass:'flute',na:true}]}
+];
+const IDS=[
+ {name:'Jordan Reyes',short:'Jordan R.',dob:'1998-04-12',last4:'4417'},
+ {name:'Sam Whitfield',short:'Sam W.',dob:'2007-06-02',last4:'8830'}
+];
+const S={offset:0,vi:0,idIdx:0,step:'door',cart:{},tipPct:20,tipTo:'maker',tab:'patron',me:null,lastAlcAt:null,mine:[],nextNum:103,orders:[],checkedIn:0};
+const V=()=>VENUES[S.vi];
+const D=id=>V().menu.find(d=>d.id===id);
+const now=()=>Date.now()+S.offset*60000;
+const fmt=t=>new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+const m=n=>'$'+n.toFixed(2);
+const me=()=>IDS[S.idIdx];
+const age=p=>{const b=new Date(p.dob),n=new Date(now());let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a};
+const legal=()=>age(me())>=21;
+const count=items=>items.reduce((s,i)=>s+i.qty,0);
+const cartItems=()=>Object.entries(S.cart).filter(([,q])=>q>0).map(([id,qty])=>({id,qty}));
+const alcCount=items=>items.reduce((s,i)=>s+(D(i.id).na?0:i.qty),0);
+const sub=items=>items.reduce((s,i)=>s+D(i.id).price*i.qty,0);
+
+function enterVenue(i){
+ S.vi=i;const v=V(),mn=v.menu;
+ Object.assign(S,{step:'door',cart:{},tipTo:'maker',me:v.staff[0],lastAlcAt:null,mine:[],nextNum:103,checkedIn:now()-12*60000});
+ S.orders=[
+  {id:'o101',num:101,patron:'Dee M.',items:[{id:mn[0].id,qty:2}],subtotal:mn[0].price*2,fee:2,tip:3,tipTo:v.staff[1],status:'making',maker:v.staff[1],placedAt:now()-6*60000,sticker:false},
+  {id:'o102',num:102,patron:'Chris P.',items:[{id:mn[1].id,qty:1},{id:mn[5].id,qty:1}],subtotal:mn[1].price+mn[5].price,fee:2,tip:3.4,tipTo:'maker',status:'new',maker:null,placedAt:now()-2*60000,sticker:false}];
+ const t=v.theme,el=document.getElementById('patron');
+ const map={display:'--t-display',body:'--t-body',bg:'--t-bg',surface:'--t-surface',text:'--t-text',muted:'--t-muted',line:'--t-line',
+  accent:'--t-accent',on:'--t-on',ticket:'--t-ticket',ticketInk:'--t-ticket-ink',radius:'--t-radius',bgimg:'--t-bgimg'};
+ for(const k in map)el.style.setProperty(map[k],t[k]);
+ document.querySelector('[data-pane="patron"]').dataset.venue=v.key;
+}
+
+function paceBlock(){
+ const v=V(),items=cartItems(),alc=alcCount(items);
+ if(!alc)return null;
+ if(!legal())return 'This ID is under 21. Remove alcoholic drinks to continue.';
+ if(alc>v.perOrder)return `Up to ${v.perOrder} alcoholic drinks per order here.`;
+ if(S.lastAlcAt&&v.paceMin>0){const next=S.lastAlcAt+v.paceMin*60000;
+  if(now()<next)return `Your next alcoholic order opens at ${fmt(next)}. Non-alcoholic drinks can go through now.`}
+ return null;
+}
+const myOrder=()=>S.orders.find(o=>o.id===S.mine[S.mine.length-1]);
+const tipDest=o=>o.tipTo==='maker'?(o.maker||'whoever makes it'):o.tipTo;
+
+function renderPatron(){
+ const v=V(),p=me(),a=age(p),el=document.getElementById('patron');
+ let h='';
+ if(S.step==='door'){
+  h=`<div class="hero"><div class="kind">${v.kind}</div><div class="vname">${v.name}</div><p>${v.tagline}</p></div>
+  <h3>You're checked in</h3>
+  <div class="idcard"><div class="face" aria-hidden="true"></div><div>
+   <b>${p.name}</b><span class="small p-muted">License ending ${p.last4} · scanned at the door ${fmt(S.checkedIn)}</span><br>
+   <span class="pill ${a>=21?'ok':'no'}">${a>=21?'21+ verified':'Under 21'}</span></div></div>
+  ${a>=21?`<p class="small p-muted" style="margin-top:0">The bar sees your first name and last initial. Never your ID number.</p>`
+   :`<div class="p-notice">This license can't order alcohol here. Non-alcoholic drinks are still available.</div>`}
+  <div style="margin-top:auto;display:grid;gap:.7rem">
+   <button class="p-btn" data-a="go" data-v="menu">See the menu</button>
+   <button class="p-link small" data-a="swapId">Demo: scan a different ID</button></div>`;
+ }
+ else if(S.step==='menu'){
+  const items=cartItems(),n=count(items),o=myOrder(),live=o&&o.status!=='done';
+  h=`<h2>What are you drinking?</h2>
+  ${live?`<button class="p-link small" data-a="go" data-v="ticket" style="align-self:flex-start;margin-bottom:.4rem">View ticket #${o.num}</button>`:''}
+  <ul class="menu">${v.menu.map(d=>{const off=!d.na&&!legal(),q=S.cart[d.id]||0;
+   return `<li class="${off?'off':''}"><div class="glass ${d.glass}" style="--c:${d.color}" aria-hidden="true"></div>
+   <div><div class="name">${d.name}</div><div class="ing">${d.ing}</div><div class="price">${m(d.price)}</div></div>
+   <div class="stepper">${q?`<button data-a="qty" data-v="${d.id}:-1" aria-label="Remove one ${d.name}">−</button><span>${q}</span>`:''}
+   <button data-a="qty" data-v="${d.id}:1" aria-label="Add ${d.name}" ${off?'disabled':''}>+</button></div></li>`}).join('')}</ul>
+  <button class="p-btn" data-a="go" data-v="checkout" ${n?'':'disabled'}>${n?`Review order · ${n} drink${n>1?'s':''} · ${m(sub(items))}`:'Add a drink to start'}</button>`;
+ }
+ else if(S.step==='checkout'){
+  const items=cartItems(),s=sub(items),n=count(items),fee=v.feeModel==='patron'?n:0,tip=Math.round(s*S.tipPct)/100,block=paceBlock();
+  h=`<button class="p-link small" data-a="go" data-v="menu" style="align-self:flex-start">Back to menu</button>
+  <h2>Review order</h2>
+  <div class="rows">${items.map(i=>`<div class="row"><span>${i.qty} × ${D(i.id).name}</span><span>${m(D(i.id).price*i.qty)}</span></div>`).join('')}</div>
+  <h3>Tip</h3>
+  <div class="p-chips">${[15,20,25].map(t=>`<button data-a="tip" data-v="${t}" aria-pressed="${S.tipPct===t}">${t}%</button>`).join('')}</div>
+  <h3>Tip goes to</h3>
+  <div class="p-chips"><button data-a="tipTo" data-v="maker" aria-pressed="${S.tipTo==='maker'}">Whoever makes it</button>
+   ${v.staff.map(b=>`<button data-a="tipTo" data-v="${b}" aria-pressed="${S.tipTo===b}">${b}</button>`).join('')}</div>
+  <div class="rows">
+   <div class="row"><span>Drinks</span><span>${m(s)}</span></div>
+   ${fee?`<div class="row"><span>Service fee ($1 per drink)</span><span>${m(fee)}</span></div>`:''}
+   <div class="row"><span>Tip</span><span>${m(tip)}</span></div>
+   <div class="row total"><span>Added to your tab</span><span>${m(s+fee+tip)}</span></div></div>
+  ${block?`<div class="p-notice">${block}</div>`:''}
+  <button class="p-btn" data-a="place" ${block?'disabled':''} style="margin-top:auto">Place order</button>`;
+ }
+ else if(S.step==='ticket'){
+  const o=myOrder();
+  const steps=[['new','In line'],['making',o.maker?`Being made by ${o.maker}`:'Being made'],['ready','Sealed and ready at pickup'],['done','Picked up']];
+  const idx=steps.findIndex(s=>s[0]===o.status);
+  const tab=S.mine.map(id=>S.orders.find(x=>x.id===id)).reduce((t,x)=>t+x.subtotal+x.fee+x.tip,0);
+  h=`${o.status==='ready'?`<div class="p-notice good"><b>Your drinks are ready.</b> Head to the pickup end of the bar and show this screen.</div>`:''}
+  <div class="ticket ${o.status==='ready'?'ready':''}" role="status" aria-live="polite">
+   <div class="num">${v.name} · Order #${o.num}</div>
+   <div class="who">${p.short}</div>
+   <div>${o.items.map(i=>`${i.qty} × ${D(i.id).name}`).join('<br>')}</div>
+   <div class="tear"></div>
+   <ol class="steps">${steps.map((s,i)=>`<li class="${i<idx||o.status==='done'&&i===idx?'done':i===idx?'now':''}">${s[1]}</li>`).join('')}</ol>
+  </div>
+  <p class="small p-muted" style="margin-top:0">Your drink comes sealed with a sticker over the top. Peel it off once it's in your hand. If the seal is broken, hand it back.</p>
+  <div class="row"><span>Tab so far</span><b>${m(tab)}</b></div>
+  <div class="row small p-muted"><span>Tip goes to</span><span>${tipDest(o)}</span></div>
+  <button class="p-btn" data-a="go" data-v="menu" style="margin-top:auto">${o.status==='done'?'Order another round':'Back to menu'}</button>`;
+ }
+ el.innerHTML=`<div class="p-head"><span>${fmt(now())}</span><span>${v.name}</span></div><div class="p-body" data-k="${v.key}-${S.step}">${h}</div>`;
+}
+
+function renderBar(){
+ const v=V(),cols=[['new','New'],['making','Making'],['ready','Waiting for pickup']],el=document.getElementById('bar');
+ const tips={};v.staff.forEach(b=>tips[b]=0);
+ S.orders.filter(o=>o.status==='done').forEach(o=>{const d=tipDest(o);tips[d]=(tips[d]||0)+o.tip});
+ el.innerHTML=`<div class="bar-head"><h2 style="margin:0">Behind the bar at ${v.name}</h2>
+  <div class="chips" style="margin:0" aria-label="Signed in as">${v.staff.map(b=>`<button data-a="me" data-v="${b}" aria-pressed="${S.me===b}">${b}</button>`).join('')}</div></div>
+ <div class="board">${cols.map(([k,label])=>{const list=S.orders.filter(o=>o.status===k).sort((a,b)=>a.placedAt-b.placedAt);
+  return `<div class="col"><h3><span>${label}</span><span>${list.length}</span></h3>
+  ${list.length?list.map(o=>`<div class="order">
+   <div class="who">${o.patron}</div><div class="meta">#${o.num} · ordered ${fmt(o.placedAt)}</div>
+   <ul>${o.items.map(i=>`<li>${i.qty} × ${D(i.id).name}${D(i.id).na?' (NA)':''}</li>`).join('')}</ul>
+   <div class="meta">Tip ${m(o.tip)} to ${tipDest(o)}</div>
+   ${k==='new'?`<button data-a="start" data-v="${o.id}">Start making</button>`:''}
+   ${k==='making'?`<label><input type="checkbox" data-c="sticker" data-v="${o.id}" ${o.sticker?'checked':''}> Seal sticker applied</label>
+     <button data-a="ready" data-v="${o.id}" ${o.sticker?'':'disabled'}>Mark ready</button>`:''}
+   ${k==='ready'?`<div class="meta" style="margin-top:.4rem">Match the name and #${o.num} on their screen before handing off.</div>
+     <button data-a="handoff" data-v="${o.id}">Handed off</button>`:''}
+  </div>`).join(''):`<div class="empty">${k==='new'?'No new orders.':'Nothing here.'}</div>`}</div>`}).join('')}</div>
+ <div style="margin-top:1rem"><h3>Tips tonight (picked-up orders)</h3>
+  ${Object.entries(tips).map(([b,t])=>`<div class="row"><span>${b}</span><span>${m(t)}</span></div>`).join('')}</div>`;
+}
+
+function renderVenue(){
+ const v=V(),t=v.theme,el=document.getElementById('venue');
+ el.innerHTML=`<h2 style="margin-top:0">${v.name} settings</h2>
+ <div class="venue-grid">
+  <div>
+   <h3>Brand theme</h3>
+   <div class="swatches">${[t.bg,t.accent,t.text,t.ticket].map(c=>`<i style="background:${c}"></i>`).join('')}</div>
+   <p class="small muted" style="margin-top:0">Colors, fonts, menu and staff are all this venue's. Swapping them changes the patron app without touching how ordering works.</p>
+   <label class="field"><span>Minimum time between alcoholic orders</span>
+    <select data-c="pace">${[0,15,30,45,60].map(x=>`<option value="${x}" ${v.paceMin===x?'selected':''}>${x?x+' minutes':'No limit'}</option>`).join('')}</select></label>
+   <label class="field"><span>Alcoholic drinks per order</span>
+    <select data-c="per">${[1,2,3,4].map(x=>`<option ${v.perOrder===x?'selected':''}>${x}</option>`).join('')}</select></label>
+  </div>
+  <div>
+   <h3>Who pays the platform fee</h3>
+   <div class="chips"><button data-a="fee" data-v="patron" aria-pressed="${v.feeModel==='patron'}">Patron, $1 per drink</button>
+    <button data-a="fee" data-v="venue" aria-pressed="${v.feeModel==='venue'}">Venue, capped at $${v.cap}/month</button></div>
+   ${v.feeModel==='venue'?`<div class="small">Venue fees this month: ${m(v.feesThisMonth)} of ${m(v.cap)}</div>
+    <div class="meter"><i style="width:${Math.min(100,v.feesThisMonth/v.cap*100)}%"></i></div>
+    <div class="small muted">${v.feesThisMonth>=v.cap?'Cap reached. Remaining orders this month are free for the venue.':'$1 comes off each drink sale until the cap.'}</div>`
+    :`<div class="small muted">The fee shows as its own line at checkout.</div>`}
+   <h3 style="margin-top:1rem">Demo controls</h3>
+   <div class="chips"><button data-a="skip">Advance clock 15 min</button><button data-a="restart">Restart this venue</button></div>
+  </div>
+ </div>`;
+}
+
+function renderChrome(){
+ const n=S.orders.filter(o=>o.status==='new').length;
+ document.getElementById('venues').innerHTML=`<span>Venue</span>`+VENUES.map((v,i)=>`<button data-a="venue" data-v="${i}" aria-pressed="${S.vi===i}">${v.name}</button>`).join('');
+ document.getElementById('tabs').innerHTML=[['patron','Patron'],['bar','Bar'],['venue','Venue']].map(([k,l])=>
+  `<button data-a="tab" data-v="${k}" aria-pressed="${S.tab===k}">${l}${k==='bar'&&n?`<span class="badge">${n}</span>`:''}</button>`).join('');
+ document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===S.tab));
+ document.getElementById('clock').textContent=`Demo clock ${fmt(now())}`;
+}
+let lastKey='';
+function render(){
+ renderBar();renderVenue();renderChrome();
+ const key=S.vi+S.step;
+ if(key!==lastKey){renderPatron();lastKey=key}else{ // keep entrance animation for screen changes only
+  const body=document.querySelector('#patron .p-body');renderPatron();document.querySelector('#patron .p-body').style.animation='none'}
+}
+
+const act={
+ go:v=>{S.step=v},
+ venue:v=>{enterVenue(+v);S.tab='patron'},
+ swapId:()=>{S.idIdx=(S.idIdx+1)%IDS.length;S.cart={};S.mine=[];S.lastAlcAt=null;lastKey=''},
+ qty:v=>{const[id,d]=v.split(':');S.cart[id]=Math.max(0,(S.cart[id]||0)+ +d)},
+ tip:v=>{S.tipPct=+v},
+ tipTo:v=>{S.tipTo=v},
+ place:()=>{
+  if(paceBlock())return;
+  const V0=V(),items=cartItems(),s=sub(items),n=count(items),fee=V0.feeModel==='patron'?n:0;
+  if(V0.feeModel==='venue')V0.feesThisMonth=Math.min(V0.cap,V0.feesThisMonth+n);
+  const o={id:'o'+S.nextNum,num:S.nextNum++,patron:me().short,items,subtotal:s,fee,tip:Math.round(s*S.tipPct)/100,tipTo:S.tipTo,status:'new',maker:null,placedAt:now(),sticker:false};
+  S.orders.push(o);S.mine.push(o.id);if(alcCount(items))S.lastAlcAt=now();S.cart={};S.step='ticket';
+ },
+ me:v=>{S.me=v},
+ start:v=>{const o=S.orders.find(x=>x.id===v);o.status='making';o.maker=S.me},
+ ready:v=>{const o=S.orders.find(x=>x.id===v);if(o.sticker)o.status='ready'},
+ handoff:v=>{S.orders.find(x=>x.id===v).status='done'},
+ fee:v=>{V().feeModel=v},
+ skip:()=>{S.offset+=15},
+ tab:v=>{S.tab=v},
+ restart:()=>{enterVenue(S.vi);lastKey=''}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;act[b.dataset.a](b.dataset.v);render()});
+document.addEventListener('change',e=>{const t=e.target,c=t.dataset.c;if(!c)return;
+ if(c==='sticker')S.orders.find(o=>o.id===t.dataset.v).sticker=t.checked;
+ if(c==='pace')V().paceMin=+t.value;
+ if(c==='per')V().perOrder=+t.value;
+ render()});
+enterVenue(0);render();
+</script>
+</body>
+</html>
