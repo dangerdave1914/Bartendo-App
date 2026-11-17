@@ -93,15 +93,50 @@ h3{font-size:1.05rem;margin:0 0 .5rem;font-weight:700}
 .menu .name{font-weight:700;font-size:1.02rem}
 .menu .ing{font-size:.8rem;color:var(--t-muted);line-height:1.3}
 .menu .price{font-size:.88rem;font-variant-numeric:tabular-nums;margin-top:.1rem}
-.glass{--c:#ccc;width:28px;height:42px;margin:0 auto;border:2px solid var(--t-muted);border-top:0;border-radius:0 0 5px 5px;
-  background:linear-gradient(to top,var(--c) 74%,transparent 74%)}
+
+/* Upgraded 3D-shaded glass icons */
+.glass{
+  --c:#ccc;
+  position:relative;
+  overflow:hidden;
+  width:28px;
+  height:42px;
+  margin:0 auto;
+  border:1.5px solid rgba(255,255,255,.35);
+  border-top:0;
+  border-radius:0 0 6px 6px;
+  background:linear-gradient(90deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.03) 35%, rgba(0,0,0,.18) 100%);
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.35), 0 4px 8px rgba(0,0,0,.22);
+}
+.glass::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:74%;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,.05) 30%, rgba(0,0,0,.35) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--c) 85%, #fff) 0%, var(--c) 30%, color-mix(in srgb, var(--c) 65%, #000) 100%);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.5);
+}
+.glass::before{
+  content:"";
+  position:absolute;
+  top:2px;bottom:3px;left:4px;
+  width:3px;
+  border-radius:2px;
+  background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.05));
+  z-index:2;
+  pointer-events:none;
+}
+.glass.can::after{height:100%}
 .glass.rocks{width:36px;height:30px;border-radius:0 0 8px 8px}
 .glass.pint{width:28px;height:46px;border-radius:0 0 4px 4px;clip-path:polygon(0 0,100% 0,88% 100%,12% 100%)}
 .glass.coupe{width:42px;height:22px;border-radius:0 0 50% 50%}
 .glass.wine{width:34px;height:30px;border-radius:0 0 50% 50%}
 .glass.flute{width:18px;height:46px;border-radius:0 0 9px 9px}
 .glass.shot{width:22px;height:26px;border-radius:0 0 3px 3px}
-.glass.can{width:26px;height:42px;border-top:2px solid var(--t-muted);border-radius:5px;background:var(--c)}
+.glass.can{width:26px;height:42px;border-top:1.5px solid rgba(255,255,255,.45);border-radius:5px}
+
 .stepper{display:flex;align-items:center;gap:.4rem}
 .stepper button{width:34px;height:34px;border-radius:50%;border:1px solid var(--t-line);background:none;font-weight:700}
 .stepper button:last-child{background:var(--t-accent);color:var(--t-on);border-color:var(--t-accent)}
@@ -142,6 +177,27 @@ h3{font-size:1.05rem;margin:0 0 .5rem;font-weight:700}
   @keyframes ring{50%{filter:drop-shadow(0 0 14px var(--t-accent))}}
 }
 
+/* Arrival scene */
+.phone-wrap{position:relative}
+.arrival{position:absolute;inset:0;border-radius:32px;overflow:hidden;background:#000;z-index:5;transition:opacity .6s ease}
+.arrival[hidden]{display:none}
+.arrival.out{opacity:0;pointer-events:none}
+.arrival canvas{display:block;width:100%;height:100%}
+.a-text{position:absolute;left:0;right:0;bottom:0;padding-bottom:22%!important;padding-top:4rem!important;background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,.35) 55%,transparent);text-align:center;padding:0 1.2rem;color:#fff;opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease;pointer-events:none}
+.a-text.show{opacity:1;transform:none}
+.a-kind{font-size:.9rem;opacity:.85;text-transform:uppercase;letter-spacing:.08em}
+.a-name{font-size:3.2rem;line-height:.95;margin-top:.35rem;overflow-wrap:anywhere}
+.a-skip{position:absolute;top:14px;right:14px;z-index:2;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:.35rem .85rem;font-size:.8rem}
+[data-a-venue="agave"] .a-name{color:#FFF4DF;text-shadow:0 3px 20px rgba(0,0,0,.7), 0 0 30px rgba(242,182,50,.45)}
+[data-a-venue="dive"] .a-name{color:#ffe6e8;text-shadow:0 0 6px #ff4455,0 0 18px #ff2a40,0 0 40px #c8201e;transform:rotate(-3deg)}
+[data-a-venue="roof"] .a-name{color:#FFF4E6;letter-spacing:.02em;text-shadow:0 3px 24px rgba(15,10,35,.85), 0 0 28px rgba(245,194,139,.4)}
+@media (prefers-reduced-motion:no-preference){
+  .glass.pour::after{animation:pour .7s cubic-bezier(.3,.7,.3,1)}
+  @keyframes pour{from{height:0}}
+  [data-a-venue="dive"] .a-text.show .a-name{animation:neon 2.4s steps(1) 1}
+  @keyframes neon{0%{opacity:.2}8%{opacity:1}12%{opacity:.3}18%{opacity:1}22%{opacity:.5}26%,100%{opacity:1}}
+}
+
 /* ---------- Operator side (bar + venue) stays neutral ---------- */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.1rem}
 .bar-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
@@ -161,6 +217,47 @@ h3{font-size:1.05rem;margin:0 0 .5rem;font-weight:700}
 .field select{padding:.5rem;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
 .meter{height:10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin:.4rem 0}
 .meter i{display:block;height:100%;background:var(--brass)}
+/* Drink renderer + photo ingest */
+.menu .gwrap{display:flex;justify-content:center;align-items:flex-end;height:60px}
+.menu .gwrap .drink-svg{width:46px;height:58px;overflow:visible}
+.menu .name button{all:unset;cursor:pointer;font-weight:700}
+.menu .name button:focus-visible{outline:2px solid var(--t-accent);outline-offset:2px}
+.menu .spec-tag{display:inline-block;margin-left:.35rem;font-size:.68rem;font-weight:600;padding:.05rem .4rem;border-radius:99px;background:var(--t-accent);color:var(--t-on);vertical-align:2px}
+.dsheet{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;padding:1.1rem;background:var(--t-bg);background-image:var(--t-bgimg);color:var(--t-text);font-family:var(--t-body);border-radius:32px}
+.dsheet .kind{font-size:.8rem;color:var(--t-accent);font-weight:600}
+.dsheet h2{font-family:var(--t-display);font-weight:400;font-size:2rem;line-height:1.05}
+.dclose{align-self:flex-end}
+.dstage{display:flex;justify-content:center;padding:.4rem 0 .6rem;perspective:600px}
+.dstage .drink-svg{overflow:visible;filter:drop-shadow(0 18px 18px rgba(0,0,0,.35))}
+.realphoto summary{cursor:pointer;color:var(--t-muted);font-size:.9rem;margin-bottom:.4rem}
+.realphoto img{width:100%;max-height:180px;object-fit:cover;border-radius:var(--t-radius);margin-bottom:.8rem}
+.ingest .field input:not([type=color]){padding:.5rem;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;width:100%}
+.ing-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0 .75rem}
+.ing-compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1rem}
+.ing-compare figure{margin:0;background:#191524;border-radius:12px;padding:.6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px}
+.ing-compare img{width:100%;max-height:200px;object-fit:contain;border-radius:8px}
+.ing-compare figcaption{color:#cfc6dc;font-size:.8rem;margin-top:.4rem}
+.ing-render .drink-svg{overflow:visible}
+.ing-thumb{display:block;max-width:180px;max-height:180px;object-fit:cover;border-radius:10px;margin-bottom:.75rem}
+.ing-swatches{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+.ing-swatches input[type=color]{width:40px;height:34px;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--bg)}
+.filebtn{display:inline-block;padding:.45rem .8rem;border-radius:99px;border:1px solid var(--line);cursor:pointer}
+.filebtn:focus-within{outline:2px solid var(--brass)}
+.chips .primary-chip{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700}
+.notice{border-left:3px solid var(--cherry);padding:.5rem .75rem;margin:.5rem 0;background:color-mix(in srgb,var(--cherry) 10%,transparent);border-radius:0 8px 8px 0;font-size:.92rem}
+.venue-full{grid-column:1/-1;border-top:1px solid var(--line);margin-top:.5rem;padding-top:1rem}
+@media (prefers-reduced-motion:no-preference){
+  .drink-svg .ice{animation:bob 3.2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(2.5px)}}
+  .drink-svg .bub{animation:rise 2.4s linear infinite}
+  @keyframes rise{from{transform:translateY(0);opacity:.8}to{transform:translateY(var(--rise));opacity:0}}
+  .drink-svg .smoke path{animation:smoke 3.3s ease-out infinite;opacity:0}
+  @keyframes smoke{0%{opacity:0;transform:translateY(6px)}30%{opacity:.35}100%{opacity:0;transform:translateY(-22px) scaleX(1.4)}}
+  .drink-svg.live{animation:turn 6s ease-in-out infinite;transform-style:preserve-3d}
+  @keyframes turn{0%,100%{transform:rotateY(-14deg) translateY(0)}50%{transform:rotateY(14deg) translateY(-6px)}}
+  .dsheet{animation:sheet .35s ease-out}
+  @keyframes sheet{from{transform:translateY(24px);opacity:0}}
+}
 .venue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 1.5rem}
 .swatches{display:flex;gap:.35rem;margin:.3rem 0 .8rem}
 .swatches i{width:26px;height:26px;border-radius:6px;border:1px solid var(--line)}
@@ -174,7 +271,7 @@ h3{font-size:1.05rem;margin:0 0 .5rem;font-weight:700}
 </header>
 <nav class="tabs" id="tabs" aria-label="Views"></nav>
 <main class="panes">
-  <section class="pane" data-pane="patron" aria-label="Patron app"><div class="phone" id="patron"></div></section>
+  <section class="pane" data-pane="patron" aria-label="Patron app"><div class="phone-wrap"><div class="phone" id="patron"></div><div class="arrival" id="arrival" hidden></div></div></section>
   <section class="pane" data-pane="bar" aria-label="Bartender queue"><div class="card" id="bar"></div></section>
   <section class="pane" data-pane="venue" aria-label="Venue settings"><div class="card" id="venue"></div></section>
 </main>
@@ -188,7 +285,7 @@ const VENUES=[
   menu:[
    {id:'pal',name:'Paloma',price:11,color:'#F0A69C',ing:'Blanco tequila, grapefruit, lime, salted rim',glass:''},
    {id:'mar',name:'Casa Margarita',price:12,color:'#D6CF6E',ing:'Reposado, orange liqueur, fresh lime, tajín rim',glass:'rocks'},
-   {id:'mng',name:'Mezcal Negroni',price:14,color:'#A3262A',ing:'Mezcal, Campari, sweet vermouth, orange peel',glass:'rocks'},
+   {id:'mng',name:'Mezcal Negroni',price:14,color:'#A3262A',ing:'Mezcal, Campari, sweet vermouth, orange peel',glass:'rocks',specialty:true,spec:{name:'Mezcal Negroni',glass:'rocks',fill:.72,layers:[{color:'#9E1F22',portion:1}],foam:null,ice:'big',rim:null,garnishes:[{type:'citrus-peel',color:'#F08A24'}],carbonated:false,smoke:true,alcoholic:true,ingredients:'Mezcal, Campari, sweet vermouth, orange peel',description:'Smoky, bitter and bright, stirred over one big rock.'}},
    {id:'mic',name:'Michelada',price:9,color:'#B5452B',ing:'Mexican lager, lime, hot sauce, chile salt',glass:'pint'},
    {id:'rep',name:'Reposado, neat',price:10,color:'#D08A2E',ing:'1.5 oz pour, orange slice on the side',glass:'shot'},
    {id:'agu',name:'Agua de Jamaica',price:5,color:'#8E1B3A',ing:'Hibiscus, cane sugar, lime. No alcohol.',glass:'',na:true}]},
@@ -213,7 +310,7 @@ const VENUES=[
    {id:'f75',name:'French 75',price:15,color:'#EFE2A6',ing:'Gin, lemon, sugar, topped with brut',glass:'flute'},
    {id:'esp',name:'Espresso Martini',price:16,color:'#4A2C1C',ing:'Vodka, coffee liqueur, fresh espresso',glass:'coupe'},
    {id:'ape',name:'Aperol Spritz',price:14,color:'#F07A2E',ing:'Aperol, prosecco, soda, orange',glass:'wine'},
-   {id:'sof',name:'Smoked Old Fashioned',price:18,color:'#C9822B',ing:'Bourbon, demerara, bitters, applewood smoke',glass:'rocks'},
+   {id:'sof',name:'Smoked Old Fashioned',price:18,color:'#C9822B',ing:'Bourbon, demerara, bitters, applewood smoke',glass:'rocks',specialty:true,spec:{name:'Smoked Old Fashioned',glass:'rocks',fill:.66,layers:[{color:'#B8701E',portion:1}],foam:null,ice:'big',rim:null,garnishes:[{type:'citrus-peel',color:'#F08A24'},{type:'cherry',color:'#7A0E1C'}],carbonated:false,smoke:true,alcoholic:true,ingredients:'Bourbon, demerara, bitters, applewood smoke',description:'Bourbon stirred down and finished under a cloche of applewood smoke.'}},
    {id:'ros',name:'Rosé, by the glass',price:13,color:'#F4B6B0',ing:'Provence, dry and chilled',glass:'wine'},
    {id:'yuz',name:'Yuzu Spritz',price:9,color:'#F3E27A',ing:'Yuzu, elderflower, soda. No alcohol.',glass:'flute',na:true}]}
 ];
@@ -236,7 +333,7 @@ const alcCount=items=>items.reduce((s,i)=>s+(D(i.id).na?0:i.qty),0);
 const sub=items=>items.reduce((s,i)=>s+D(i.id).price*i.qty,0);
 
 function enterVenue(i){
- S.vi=i;const v=V(),mn=v.menu;
+ S.vi=i;S.detail=null;if(typeof ING!=='undefined'&&ING.status!=='idle'){ING.status='idle';ING.spec=null}const v=V(),mn=v.menu;
  Object.assign(S,{step:'door',cart:{},tipTo:'maker',me:v.staff[0],lastAlcAt:null,mine:[],nextNum:103,checkedIn:now()-12*60000});
  S.orders=[
   {id:'o101',num:101,patron:'Dee M.',items:[{id:mn[0].id,qty:2}],subtotal:mn[0].price*2,fee:2,tip:3,tipTo:v.staff[1],status:'making',maker:v.staff[1],placedAt:now()-6*60000,sticker:false},
@@ -280,8 +377,8 @@ function renderPatron(){
   h=`<h2>What are you drinking?</h2>
   ${live?`<button class="p-link small" data-a="go" data-v="ticket" style="align-self:flex-start;margin-bottom:.4rem">View ticket #${o.num}</button>`:''}
   <ul class="menu">${v.menu.map(d=>{const off=!d.na&&!legal(),q=S.cart[d.id]||0;
-   return `<li class="${off?'off':''}"><div class="glass ${d.glass}" style="--c:${d.color}" aria-hidden="true"></div>
-   <div><div class="name">${d.name}</div><div class="ing">${d.ing}</div><div class="price">${m(d.price)}</div></div>
+   return `<li class="${off?'off':''}">${d.spec?`<div class="gwrap">${drinkSVG(d.spec,{w:46,h:58})}</div>`:`<div class="glass ${d.glass} ${S.pour===d.id?'pour':''}" style="--c:${d.color}" aria-hidden="true"></div>`}
+   <div><div class="name">${d.spec?`<button data-a="detail" data-v="${d.id}">${esc(d.name)}</button><span class="spec-tag">${d.specialty?'Specialty':'View'}</span>`:d.name}</div><div class="ing">${esc(d.ing)}</div><div class="price">${m(d.price)}</div></div>
    <div class="stepper">${q?`<button data-a="qty" data-v="${d.id}:-1" aria-label="Remove one ${d.name}">−</button><span>${q}</span>`:''}
    <button data-a="qty" data-v="${d.id}:1" aria-label="Add ${d.name}" ${off?'disabled':''}>+</button></div></li>`}).join('')}</ul>
   <button class="p-btn" data-a="go" data-v="checkout" ${n?'':'disabled'}>${n?`Review order · ${n} drink${n>1?'s':''} · ${m(sub(items))}`:'Add a drink to start'}</button>`;
@@ -322,7 +419,7 @@ function renderPatron(){
   <div class="row small p-muted"><span>Tip goes to</span><span>${tipDest(o)}</span></div>
   <button class="p-btn" data-a="go" data-v="menu" style="margin-top:auto">${o.status==='done'?'Order another round':'Back to menu'}</button>`;
  }
- el.innerHTML=`<div class="p-head"><span>${fmt(now())}</span><span>${v.name}</span></div><div class="p-body" data-k="${v.key}-${S.step}">${h}</div>`;
+ el.innerHTML=`<div class="p-head"><span>${fmt(now())}</span><span>${v.name}</span></div><div class="p-body" data-k="${v.key}-${S.step}">${h}</div>${S.step==='menu'?detailSheet():''}`;
 }
 
 function renderBar(){
@@ -369,8 +466,9 @@ function renderVenue(){
     <div class="small muted">${v.feesThisMonth>=v.cap?'Cap reached. Remaining orders this month are free for the venue.':'$1 comes off each drink sale until the cap.'}</div>`
     :`<div class="small muted">The fee shows as its own line at checkout.</div>`}
    <h3 style="margin-top:1rem">Demo controls</h3>
-   <div class="chips"><button data-a="skip">Advance clock 15 min</button><button data-a="restart">Restart this venue</button></div>
+   <div class="chips"><button data-a="skip">Advance clock 15 min</button><button data-a="restart">Restart this venue</button><button data-a="replay">Replay arrival</button></div>
   </div>
+  <div class="venue-full"><h3>Add a specialty drink from a photo</h3>${ingestPanel()}</div>
  </div>`;
 }
 
@@ -386,15 +484,16 @@ let lastKey='';
 function render(){
  renderBar();renderVenue();renderChrome();
  const key=S.vi+S.step;
- if(key!==lastKey){renderPatron();lastKey=key}else{ // keep entrance animation for screen changes only
-  const body=document.querySelector('#patron .p-body');renderPatron();document.querySelector('#patron .p-body').style.animation='none'}
+ if(key!==lastKey){renderPatron();lastKey=key}else{
+  renderPatron();document.querySelector('#patron .p-body').style.animation='none'}
+ S.pour=null;
 }
 
 const act={
  go:v=>{S.step=v},
- venue:v=>{enterVenue(+v);S.tab='patron'},
+ venue:v=>{enterVenue(+v);S.tab='patron';S.wantArrival=true},
  swapId:()=>{S.idIdx=(S.idIdx+1)%IDS.length;S.cart={};S.mine=[];S.lastAlcAt=null;lastKey=''},
- qty:v=>{const[id,d]=v.split(':');S.cart[id]=Math.max(0,(S.cart[id]||0)+ +d)},
+ qty:v=>{const[id,d]=v.split(':');S.cart[id]=Math.max(0,(S.cart[id]||0)+ +d);if(+d>0)S.pour=id},
  tip:v=>{S.tipPct=+v},
  tipTo:v=>{S.tipTo=v},
  place:()=>{
@@ -411,15 +510,747 @@ const act={
  fee:v=>{V().feeModel=v},
  skip:()=>{S.offset+=15},
  tab:v=>{S.tab=v},
- restart:()=>{enterVenue(S.vi);lastKey=''}
+ restart:()=>{enterVenue(S.vi);lastKey='';S.wantArrival=true},
+ replay:()=>{S.tab='patron';S.wantArrival=true}
 };
-document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;act[b.dataset.a](b.dataset.v);render()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;act[b.dataset.a](b.dataset.v);render();if(S.wantArrival){S.wantArrival=false;playArrival()}});
 document.addEventListener('change',e=>{const t=e.target,c=t.dataset.c;if(!c)return;
  if(c==='sticker')S.orders.find(o=>o.id===t.dataset.v).sticker=t.checked;
  if(c==='pace')V().paceMin=+t.value;
  if(c==='per')V().perOrder=+t.value;
+ if(c.startsWith('ing-'))ingChange(c,t);
  render()});
-enterVenue(0);render();
+
+/* ---------- Drink renderer: draws a drink from a spec (glass, layers, ice, rim, garnish) ---------- */
+const GLASSES={
+ rocks:{top:62,bot:132,hw:t=>36-3*t,base:5},
+ highball:{top:30,bot:140,hw:t=>25-2*t,base:5},
+ collins:{top:22,bot:140,hw:t=>21,base:5},
+ coupe:{top:52,bot:84,hw:t=>44*Math.sqrt(Math.max(0,1-t*t)),stem:[84,140]},
+ martini:{top:44,bot:92,hw:t=>46*(1-t)+2,stem:[92,140]},
+ flute:{top:24,bot:104,hw:t=>14-3*t*t,stem:[104,140]},
+ wine:{top:36,bot:100,hw:t=>26+10*Math.sin(Math.PI*(.15+.6*t))-26*Math.pow(t,6),stem:[100,140]},
+ pint:{top:26,bot:140,hw:t=>31-8*t,base:4},
+ shot:{top:92,bot:140,hw:t=>20-4*t,base:6},
+ mug:{top:48,bot:138,hw:t=>34+2*Math.sin(Math.PI*t),handle:true,metal:'#B87333'},
+ hurricane:{top:22,bot:130,hw:t=>18+12*Math.sin(Math.PI*(.15+.85*t))-6*Math.pow(t,3),stem:[130,140]},
+ tiki:{top:34,bot:140,hw:t=>27,tiki:true},
+ can:{top:30,bot:140,hw:t=>25,can:true}
+};
+const GLASS_LIST=Object.keys(GLASSES);
+const GARNISHES=['citrus-wheel','citrus-peel','cherry','olive','mint','herb','umbrella','flower','pineapple','straw','cinnamon','berry'];
+const ICE=['none','cubes','big','crushed'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hex=(c,f)=>/^#[0-9a-f]{6}$/i.test(String(c||'').trim())?String(c).trim():f;
+function mix(a,b,t){const p=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16));const A=p(a),B=p(b);
+ return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+
+/** Clean up whatever came back from the photo reader (or a person) into a safe spec. */
+function normSpec(s){
+ s=s&&typeof s==='object'?s:{};
+ const layers=(Array.isArray(s.layers)?s.layers:[]).slice(0,4).map(l=>({color:hex(l&&l.color,'#C9822B'),portion:Math.max(.05,Math.min(1,+(l&&l.portion)||1))}));
+ if(!layers.length)layers.push({color:'#C9822B',portion:1});
+ const gar=(Array.isArray(s.garnishes)?s.garnishes:[]).slice(0,4).map(g=>({type:GARNISHES.includes(g&&g.type)?g.type:null,color:hex(g&&g.color,'#F2B632')})).filter(g=>g.type);
+ return {
+  name:String(s.name||'House special').slice(0,40),
+  glass:GLASS_LIST.includes(s.glass)?s.glass:'rocks',
+  fill:Math.max(.3,Math.min(.95,+s.fill||.78)),
+  layers,
+  foam:s.foam&&hex(s.foam.color||s.foam,null)?{color:hex(s.foam.color||s.foam,'#F4EBD8')}:null,
+  ice:ICE.includes(s.ice)?s.ice:'none',
+  rim:s.rim&&hex(s.rim.color,null)?{color:hex(s.rim.color,'#ffffff')}:null,
+  garnishes:gar,
+  carbonated:!!s.carbonated,
+  smoke:!!s.smoke,
+  alcoholic:s.alcoholic!==false,
+  ingredients:String(s.ingredients||'').slice(0,140),
+  description:String(s.description||'').slice(0,200)
+ };
+}
+
+let svgUid=0;
+function drinkSVG(sp,{w=120,h=160,live=false}={}){
+ const g=GLASSES[sp.glass]||GLASSES.rocks,u='d'+(++svgUid),cx=60,N=24;
+ const H=g.bot-g.top,yAt=t=>g.top+H*t;
+ const side=(t0,t1,dir)=>{const pts=[];for(let i=0;i<=N;i++){const t=t0+(t1-t0)*i/N;pts.push([cx+dir*g.hw(t),yAt(t)])}return pts};
+ const shape=(t0,t1)=>{const L=side(t0,t1,-1),R=side(t1,t0,1);return 'M'+[...L,...R].map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L')+'Z'};
+ const vessel=shape(0,1),fillT=1-sp.fill;
+ let defs=`<clipPath id="${u}v"><path d="${vessel}"/></clipPath>
+  <linearGradient id="${u}sh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".28" stop-color="#fff" stop-opacity=".06"/><stop offset=".7" stop-color="#000" stop-opacity=".05"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient>
+  <radialGradient id="${u}gl" cx=".5" cy=".55" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`;
+ let body='';
+ // liquid layers, bottom up
+ const tot=sp.layers.reduce((a,l)=>a+l.portion,0);let tb=1;
+ sp.layers.forEach((l,i)=>{const share=(1-fillT)*l.portion/tot,tt=Math.max(fillT,tb-share);
+  defs+=`<linearGradient id="${u}l${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${mix(l.color,'#ffffff',.18)}"/><stop offset="1" stop-color="${mix(l.color,'#000000',.28)}"/></linearGradient>`;
+  body+=`<rect x="0" y="${yAt(tt).toFixed(1)}" width="120" height="${(yAt(tb)-yAt(tt)+.6).toFixed(1)}" fill="url(#${u}l${i})"/>`;tb=tt});
+ const sy=yAt(fillT),shw=g.hw(fillT);
+ body+=`<ellipse cx="${cx}" cy="${sy.toFixed(1)}" rx="${shw.toFixed(1)}" ry="${(shw*.12+1).toFixed(1)}" fill="${mix(sp.layers[sp.layers.length-1].color,'#ffffff',.35)}" opacity=".85"/>`;
+ if(sp.foam){const fy=sy;body+=`<rect x="0" y="${(fy-2).toFixed(1)}" width="120" height="${(Math.min(14,H*.16)).toFixed(1)}" fill="${sp.foam.color}"/>
+  <path d="M${cx-shw},${fy-1} q${shw/4},-5 ${shw/2},0 t${shw/2},0 t${shw/2},0 t${shw/2},0" fill="${sp.foam.color}"/>`}
+ // ice
+ const rnd=(n=>()=>(n=(n*9301+49297)%233280)/233280)(sp.name.length*7+sp.glass.length);
+ if(sp.ice==='cubes'){for(let i=0;i<4;i++){const s=Math.min(22,shw*.55),x=cx-shw*.6+rnd()*shw*1.2-s/2,y=sy-s*.35+i*s*.62+rnd()*4;
+  body+=`<g class="ice" style="animation-delay:${-i*.7}s"><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s.toFixed(1)}" height="${s.toFixed(1)}" rx="3" transform="rotate(${(rnd()*30-15).toFixed(0)} ${(x+s/2).toFixed(0)} ${(y+s/2).toFixed(0)})" fill="#fff" fill-opacity=".28" stroke="#fff" stroke-opacity=".6"/></g>`}}
+ if(sp.ice==='big'){const s=Math.min(42,shw*1.3);body+=`<g class="ice"><rect x="${cx-s/2}" y="${(sy-s*.25).toFixed(1)}" width="${s}" height="${s}" rx="4" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-opacity=".65"/></g>`}
+ if(sp.ice==='crushed'){for(let i=0;i<34;i++){const x=cx-shw+rnd()*shw*2,y=sy-3+rnd()*H*.45,s=3+rnd()*5;
+  body+=`<path d="M${x.toFixed(1)},${y.toFixed(1)}l${s},${-s*.4}l${s*.3},${s}l${-s},${s*.3}z" fill="#fff" fill-opacity=".5"/>`}}
+ if(sp.carbonated){for(let i=0;i<9;i++){const x=cx-shw*.7+rnd()*shw*1.4;
+  body+=`<circle class="bub" cx="${x.toFixed(1)}" cy="${(g.bot-4).toFixed(1)}" r="${(1+rnd()*1.4).toFixed(1)}" fill="#fff" fill-opacity=".7" style="--rise:${(sy-g.bot+6).toFixed(0)}px;animation-delay:${(-rnd()*2.4).toFixed(2)}s"/>`}}
+ // vessel: tint, liquid, shading, outline
+ const wall=g.metal||(g.tiki?'#7A4A2A':null);
+ let out=`<defs>${defs}</defs>`;
+ if(g.stem){const[a,b]=g.stem;out+=`<path d="M${cx-2.5},${a} L${cx-2},${b-3} L${cx-22},${b} L${cx+22},${b} L${cx+2},${b-3} L${cx+2.5},${a}Z" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-opacity=".55" stroke-width="1"/>`}
+ if(g.handle)out+=`<path d="M${cx+36},64 c22,0 22,52 0,52" fill="none" stroke="${g.metal}" stroke-width="7" stroke-linecap="round"/>`;
+ out+=`<path d="${vessel}" fill="${wall||'#fff'}" fill-opacity="${wall?1:.07}"/>`;
+ if(!wall&&!g.can)out+=`<g clip-path="url(#${u}v)">${body}</g>`;
+ out+=`<path d="${vessel}" fill="url(#${u}sh)"/><path d="${vessel}" fill="url(#${u}gl)"/>`;
+ if(wall){out+=`<path d="${vessel}" fill="${mix(wall,'#000000',.15)}" fill-opacity=".25"/>`;
+  if(g.tiki)out+=`<g fill="${mix(wall,'#000000',.45)}"><rect x="${cx-16}" y="70" width="11" height="7" rx="2"/><rect x="${cx+5}" y="70" width="11" height="7" rx="2"/><rect x="${cx-12}" y="98" width="24" height="9" rx="2"/></g>`}
+ if(g.can)out+=`<rect x="${cx-25}" y="${g.top}" width="50" height="${H}" rx="6" fill="${sp.layers[0].color}"/><path d="${vessel}" fill="url(#${u}sh)"/><rect x="${cx-25}" y="70" width="50" height="22" fill="#fff" fill-opacity=".85"/>`;
+ out+=`<path d="${vessel}" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.3"/>`;
+ out+=`<path d="M${(cx-g.hw(.05)+5).toFixed(1)},${(yAt(.06)).toFixed(1)} L${(cx-g.hw(.8)+5).toFixed(1)},${yAt(.8).toFixed(1)}" stroke="#fff" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/>`;
+ if(g.base)out+=`<rect x="${cx-g.hw(1)}" y="${g.bot-g.base}" width="${2*g.hw(1)}" height="${g.base}" fill="#fff" fill-opacity=".25"/>`;
+ if(sp.rim){const hw=g.hw(0);for(let i=0;i<22;i++){const x=cx-hw+2*hw*i/21;out+=`<circle cx="${x.toFixed(1)}" cy="${(g.top+1.5+(i%3)*.8).toFixed(1)}" r="1.6" fill="${sp.rim.color}"/>`}}
+ // garnishes perched on the rim
+ const rx=cx+g.hw(0)-4,ry=g.top;
+ sp.garnishes.forEach((ga,i)=>{const c=ga.color,ox=-i*13;
+  switch(ga.type){
+   case'citrus-wheel':out+=`<g transform="translate(${rx+ox+4},${ry-6})"><circle r="13" fill="${mix(c,'#ffffff',.55)}" stroke="${c}" stroke-width="3"/>${[0,60,120].map(a=>`<line x1="0" y1="0" x2="${(11*Math.cos(a*Math.PI/180)).toFixed(1)}" y2="${(11*Math.sin(a*Math.PI/180)).toFixed(1)}" stroke="${c}" stroke-width="1.2"/><line x1="0" y1="0" x2="${(-11*Math.cos(a*Math.PI/180)).toFixed(1)}" y2="${(-11*Math.sin(a*Math.PI/180)).toFixed(1)}" stroke="${c}" stroke-width="1.2"/>`).join('')}</g>`;break;
+   case'citrus-peel':out+=`<path d="M${rx+ox-6},${ry+4} c10,-18 18,-4 10,-16 c-6,-10 8,-14 12,-6" fill="none" stroke="${c}" stroke-width="4.5" stroke-linecap="round"/>`;break;
+   case'cherry':out+=`<path d="M${rx+ox},${ry-4} q4,-16 12,-20" fill="none" stroke="#3b6b2a" stroke-width="1.6"/><circle cx="${rx+ox}" cy="${ry-1}" r="6.5" fill="${c}"/><circle cx="${rx+ox-2}" cy="${ry-3}" r="1.8" fill="#fff" fill-opacity=".7"/>`;break;
+   case'olive':out+=`<line x1="${rx+ox-20}" y1="${ry+30}" x2="${rx+ox+10}" y2="${ry-22}" stroke="#d9b98a" stroke-width="1.8"/><ellipse cx="${rx+ox-6}" cy="${ry+6}" rx="6" ry="8" transform="rotate(-30 ${rx+ox-6} ${ry+6})" fill="${c}"/><circle cx="${rx+ox-5}" cy="${ry+4}" r="2" fill="#c0392b"/>`;break;
+   case'mint':case'herb':out+=`<g fill="${c}">${[[-6,-10,-30],[4,-16,10],[-2,-22,-5],[8,-8,35]].map(([x,y,r])=>`<ellipse cx="${cx+x+ox/2}" cy="${ry+y}" rx="4.5" ry="9" transform="rotate(${r} ${cx+x+ox/2} ${ry+y})"/>`).join('')}</g><line x1="${cx+ox/2}" y1="${ry+4}" x2="${cx+ox/2}" y2="${ry-18}" stroke="${mix(c,'#000000',.3)}" stroke-width="1.5"/>`;break;
+   case'umbrella':out+=`<line x1="${rx+ox-10}" y1="${ry+14}" x2="${rx+ox+6}" y2="${ry-24}" stroke="#d9b98a" stroke-width="1.6"/><path d="M${rx+ox-12},${ry-22} Q${rx+ox+6},${ry-44} ${rx+ox+24},${ry-26} Z" fill="${c}"/><path d="M${rx+ox-12},${ry-22} L${rx+ox+6},${ry-24} L${rx+ox+24},${ry-26}" fill="none" stroke="#fff" stroke-opacity=".5"/>`;break;
+   case'flower':out+=`<g transform="translate(${rx+ox},${ry-8})">${[0,72,144,216,288].map(a=>`<ellipse rx="4" ry="8" transform="rotate(${a}) translate(0,-6)" fill="${c}"/>`).join('')}<circle r="3.2" fill="#F2D24B"/></g>`;break;
+   case'pineapple':out+=`<path d="M${rx+ox-10},${ry+2} L${rx+ox+12},${ry+2} L${rx+ox+1},${ry-18}Z" fill="${c}"/><path d="M${rx+ox-3},${ry-16} l-6,-12 M${rx+ox+1},${ry-18} l0,-14 M${rx+ox+5},${ry-16} l6,-12" stroke="#3f8f3a" stroke-width="3" stroke-linecap="round"/>`;break;
+   case'straw':out+=`<line x1="${cx-6+ox/3}" y1="${g.bot-12}" x2="${cx+18+ox/3}" y2="${ry-28}" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`;break;
+   case'cinnamon':out+=`<rect x="${rx+ox-14}" y="${ry-30}" width="6" height="44" rx="2" transform="rotate(20 ${rx+ox-11} ${ry-8})" fill="${c}"/>`;break;
+   case'berry':out+=`${[[0,0],[7,-3],[3,-8]].map(([x,y])=>`<circle cx="${rx+ox+x}" cy="${ry-4+y}" r="4.2" fill="${c}"/>`).join('')}`;break;
+  }});
+ if(sp.smoke)out+=`<g class="smoke" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="5">${[-10,4,16].map((x,i)=>`<path style="animation-delay:${-i*1.1}s" d="M${cx+x},${g.top-2} c-8,-10 8,-18 0,-28 c-8,-10 8,-16 2,-26"/>`).join('')}</g>`;
+ return `<svg viewBox="-6 -22 132 166" width="${w}" height="${h}" aria-hidden="true" class="drink-svg${live?' live':''}">${out}</svg>`;
+}
+
+/* ---------- Photo ingest: a venue photographs a specialty drink, Claude reads it into a spec ---------- */
+const EXAMPLE_SPEC={name:'Blue Lagoon Hurricane',glass:'hurricane',fill:.86,layers:[{color:'#F2B632',portion:.35},{color:'#1FA3C8',portion:.65}],foam:null,ice:'crushed',rim:null,
+ garnishes:[{type:'pineapple',color:'#F2C94C'},{type:'umbrella',color:'#F25F8B'},{type:'cherry',color:'#C0182A'}],carbonated:false,smoke:false,alcoholic:true,
+ ingredients:'Light rum, blue curaçao, pineapple, lime, orgeat',description:'Tropical layered rum punch, pineapple and cherry on top.'};
+const INGEST_PROMPT=`You are looking at a photo of one cocktail or drink as served at a bar. Describe how it LOOKS so an app can draw a stylized illustration of it.
+Reply with only one JSON object of this shape:
+{"name": string (short menu-style name if obvious, else a descriptive name),
+ "glass": one of ${JSON.stringify(GLASS_LIST)},
+ "fill": number 0.3-0.95 (how full the glass is),
+ "layers": [{"color": "#RRGGBB", "portion": number}] bottom layer first, 1-4 entries, portions relative,
+ "foam": null or {"color": "#RRGGBB"},
+ "ice": one of ${JSON.stringify(ICE)},
+ "rim": null or {"color": "#RRGGBB"} (salt, sugar or spice on the rim),
+ "garnishes": [{"type": one of ${JSON.stringify(GARNISHES)}, "color": "#RRGGBB"}] up to 3, most visible first,
+ "carbonated": boolean, "smoke": boolean,
+ "alcoholic": boolean (best guess; true unless it clearly looks like a soft drink),
+ "ingredients": string, a short plausible comma-separated list,
+ "description": string, one appetizing sentence}
+Pick colors from the actual drink in the photo. If the photo is not a drink, reply {"error":"not a drink"}.`;
+
+let sampleFn=null;
+(async()=>{try{if(window.claude&&claude.use){const s=await claude.use('sample');if(s){const lim=await s.limits().catch(()=>null);if(lim&&lim.images){sampleFn=s;render()}}}}catch(e){}})();
+
+const ING={file:null,url:null,status:'idle',spec:null,err:'',price:14,ctl:null};
+function ingReset(){if(ING.ctl)ING.ctl.abort();Object.assign(ING,{file:null,status:'idle',spec:null,err:'',price:14,ctl:null})}
+async function ingAnalyze(){
+ if(!sampleFn||!ING.file)return;
+ ING.status='thinking';ING.err='';ING.ctl=new AbortController();render();
+ try{
+  const r=await sampleFn.json(INGEST_PROMPT,{images:[ING.file],signal:ING.ctl.signal});
+  if(r&&r.error){ING.status='error';ING.err="That photo doesn't look like a drink. Try a closer shot of the glass."}
+  else{ING.spec=normSpec(r);ING.status='review'}
+ }catch(e){
+  if(e&&e.code==='cancelled'){ING.status='idle'}
+  else{ING.status='error';ING.err={not_granted:'Photo reading was not allowed. You can still build the drink by hand with "Start from example".',
+   rate_limited:'Too many requests right now. Try again in a minute.',image_rejected:'That image could not be read. Try a JPEG or PNG under 20 MB.',
+   invalid_json:'The read came back garbled. Tap Analyze to try again.',refused:'That photo could not be processed. Try a different one.'}[e&&e.code]||'Something went wrong reading the photo. Try again.';
+   if(e&&['not_granted','sampling_disabled','images_unavailable','capability_disabled'].includes(e.code))sampleFn=null}
+ }
+ ING.ctl=null;render();
+}
+function ingestPanel(){
+ const sp=ING.spec;
+ if(ING.status==='review'&&sp){
+  const field=(label,inner)=>`<label class="field"><span>${label}</span>${inner}</label>`;
+  return `<div class="ingest">
+   <div class="ing-compare">
+    ${ING.url?`<figure><img src="${ING.url}" alt="Photo of the drink"><figcaption>Photo</figcaption></figure>`:''}
+    <figure><div class="ing-render">${drinkSVG(sp,{w:150,h:190,live:true})}</div><figcaption>App graphic</figcaption></figure>
+   </div>
+   ${field('Name',`<input data-c="ing-name" value="${esc(sp.name)}" maxlength="40">`)}
+   <div class="ing-row">${field('Price',`<input data-c="ing-price" type="number" min="1" step="1" value="${ING.price}">`)}
+    ${field('Glass',`<select data-c="ing-glass">${GLASS_LIST.map(gl=>`<option ${gl===sp.glass?'selected':''}>${gl}</option>`).join('')}</select>`)}
+    ${field('Ice',`<select data-c="ing-ice">${ICE.map(x=>`<option ${x===sp.ice?'selected':''}>${x}</option>`).join('')}</select>`)}</div>
+   <div class="field"><span>Layers (bottom to top)</span><div class="ing-swatches">
+    ${sp.layers.map((l,i)=>`<input type="color" data-c="ing-layer" data-i="${i}" value="${l.color}" aria-label="Layer ${i+1} color">`).join('')}
+    ${sp.layers.length<4?`<button class="ghost small" data-a="ingLayer" data-v="add">+ layer</button>`:''}${sp.layers.length>1?`<button class="ghost small" data-a="ingLayer" data-v="del">− layer</button>`:''}</div></div>
+   <div class="field"><span>Garnish</span><div class="chips" style="margin:0">${GARNISHES.map(gn=>`<button data-a="ingGar" data-v="${gn}" aria-pressed="${sp.garnishes.some(x=>x.type===gn)}">${gn.replace('-',' ')}</button>`).join('')}</div></div>
+   <div class="chips"><button data-a="ingFlag" data-v="carbonated" aria-pressed="${sp.carbonated}">Bubbles</button><button data-a="ingFlag" data-v="smoke" aria-pressed="${sp.smoke}">Smoke</button>
+    <button data-a="ingFlag" data-v="rim" aria-pressed="${!!sp.rim}">Rim</button><button data-a="ingFlag" data-v="foam" aria-pressed="${!!sp.foam}">Foam</button><button data-a="ingFlag" data-v="alcoholic" aria-pressed="${!sp.alcoholic}">Non-alcoholic</button></div>
+   ${field('Ingredients shown to patrons',`<input data-c="ing-ingr" value="${esc(sp.ingredients)}" maxlength="140">`)}
+   <p class="small muted" style="margin-top:0">Check the ingredients. The photo reader guesses them from how the drink looks.</p>
+   <div class="chips"><button class="primary-chip" data-a="ingAdd">Add to ${esc(V().name)} menu</button><button data-a="ingCancel">Cancel</button></div>
+  </div>`;
+ }
+ return `<div class="ingest">
+  <p class="small muted" style="margin-top:0">Snap a photo of a specialty drink as you serve it. The app reads the glass, colors, ice and garnish and builds the menu graphic, which you can adjust before it goes live.</p>
+  ${ING.url?`<img class="ing-thumb" src="${ING.url}" alt="Selected drink photo">`:''}
+  <div class="chips">
+   <label class="filebtn">${ING.url?'Choose a different photo':'Choose a photo'}<input type="file" accept="image/jpeg,image/png,image/webp" data-c="ing-file" hidden></label>
+   ${ING.file&&sampleFn?`<button class="primary-chip" data-a="ingRun" ${ING.status==='thinking'?'disabled':''}>${ING.status==='thinking'?'Reading the photo…':'Analyze photo'}</button>`:''}
+   ${ING.status==='thinking'?`<button data-a="ingStop">Stop</button>`:''}
+   <button data-a="ingExample">Start from example</button>
+  </div>
+  ${ING.file&&!sampleFn?`<p class="small muted">Automatic photo reading isn't available in this view. Use "Start from example" and match it to your photo by hand.</p>`:''}
+  ${ING.status==='error'?`<div class="notice">${esc(ING.err)}</div>`:''}
+ </div>`;
+}
+function ingChange(c,t){
+ const sp=ING.spec;
+ if(c==='ing-file'){const f=t.files&&t.files[0];if(!f)return;if(ING.url)URL.revokeObjectURL(ING.url);ingReset();ING.file=f;ING.url=URL.createObjectURL(f);return}
+ if(!sp)return;
+ if(c==='ing-name')sp.name=t.value.slice(0,40)||'House special';
+ if(c==='ing-price')ING.price=Math.max(1,Math.round(+t.value||ING.price));
+ if(c==='ing-glass')sp.glass=t.value;
+ if(c==='ing-ice')sp.ice=t.value;
+ if(c==='ing-layer')sp.layers[+t.dataset.i].color=hex(t.value,'#C9822B');
+ if(c==='ing-ingr')sp.ingredients=t.value.slice(0,140);
+}
+Object.assign(act,{
+ ingRun:()=>{ingAnalyze()},
+ ingStop:()=>{if(ING.ctl)ING.ctl.abort()},
+ ingExample:()=>{ING.spec=normSpec(EXAMPLE_SPEC);ING.status='review'},
+ ingCancel:()=>{if(ING.url)URL.revokeObjectURL(ING.url);ING.url=null;ingReset()},
+ ingLayer:v=>{const L=ING.spec.layers;if(v==='add'&&L.length<4)L.push({color:mix(L[L.length-1].color,'#ffffff',.35),portion:.5});if(v==='del'&&L.length>1)L.pop()},
+ ingGar:v=>{const G=ING.spec.garnishes,i=G.findIndex(x=>x.type===v);if(i>=0)G.splice(i,1);else if(G.length<3)G.push({type:v,color:{'citrus-wheel':'#E8C547','citrus-peel':'#F08A24',cherry:'#B0122A',olive:'#6E8B3D',mint:'#3F9A4A',herb:'#5D8A4C',umbrella:'#F25F8B',flower:'#E86AA6',pineapple:'#F2C94C',straw:'#F2F2F2',cinnamon:'#7A4320',berry:'#5B2A6E'}[v]})},
+ ingFlag:v=>{const sp=ING.spec;if(v==='rim')sp.rim=sp.rim?null:{color:'#F4F1EA'};else if(v==='foam')sp.foam=sp.foam?null:{color:'#F4EBD8'};else if(v==='alcoholic')sp.alcoholic=!sp.alcoholic;else sp[v]=!sp[v]},
+ ingAdd:()=>{const sp=ING.spec,v=V();
+  v.menu.unshift({id:'sp'+Date.now().toString(36),name:sp.name,price:ING.price,color:sp.layers[sp.layers.length-1].color,ing:sp.ingredients||sp.description,glass:sp.glass,na:!sp.alcoholic,spec:JSON.parse(JSON.stringify(sp)),photo:ING.url,specialty:true});
+  ING.url=null;ingReset();S.tab='patron';S.step='menu';lastKey=''},
+ detail:v=>{S.detail=v},
+ closeDetail:()=>{S.detail=null}
+});
+function detailSheet(){
+ const d=S.detail&&D(S.detail);if(!d||!d.spec)return '';
+ const off=!d.na&&!legal(),q=S.cart[d.id]||0;
+ return `<div class="dsheet" role="dialog" aria-label="${esc(d.name)}">
+  <button class="p-link small dclose" data-a="closeDetail">Close</button>
+  <div class="dstage">${drinkSVG(d.spec,{w:190,h:240,live:true})}</div>
+  ${d.specialty?`<div class="kind">House specialty</div>`:''}
+  <h2 style="margin:.1rem 0 .3rem">${esc(d.name)}</h2>
+  ${d.spec.description?`<p class="p-muted" style="margin:0 0 .4rem">${esc(d.spec.description)}</p>`:''}
+  <p class="small p-muted" style="margin:0 0 .8rem">${esc(d.ing)}</p>
+  ${d.photo?`<details class="realphoto"><summary>See the real photo</summary><img src="${d.photo}" alt="Photo of ${esc(d.name)}"></details>`:''}
+  <button class="p-btn" data-a="qty" data-v="${d.id}:1" ${off?'disabled':''} style="margin-top:auto">${off?'21+ only':`Add${q?' another':''} · ${m(d.price)}`}</button>
+ </div>`;
+}
+
+/* ---------- Arrival scenes (Three.js, loaded only when needed) ---------- */
+let threeP=null;
+function loadThree(){
+ if(window.THREE)return Promise.resolve();
+ if(!threeP)threeP=new Promise((res,rej)=>{const sc=document.createElement('script');
+  sc.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)});
+ return threeP;
+}
+function webglOK(){try{const c=document.createElement('canvas');return !!(c.getContext('webgl')||c.getContext('experimental-webgl'))}catch(e){return false}}
+const clamp01=x=>Math.max(0,Math.min(1,x));
+const ease=x=>1-Math.pow(1-clamp01(x),3);
+function canvasTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);return t}
+
+function glowSpriteTex(){
+ return canvasTex(64,64,(g,w,h)=>{
+  const gr=g.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,255,1)');
+  gr.addColorStop(.25,'rgba(255,235,190,.85)');
+  gr.addColorStop(.6,'rgba(255,180,90,.25)');
+  gr.addColorStop(1,'rgba(255,140,40,0)');
+  g.fillStyle=gr;g.fillRect(0,0,w,h);
+ });
+}
+
+const SCENES={
+ agave(scene,camera){
+  // Rich twilight indigo-magenta gradient sky instead of flat solid color
+  scene.background=canvasTex(4,256,(g,w,h)=>{
+   const gr=g.createLinearGradient(0,0,0,h);
+   gr.addColorStop(0,'#090e26');
+   gr.addColorStop(.5,'#17285A');
+   gr.addColorStop(.85,'#352354');
+   gr.addColorStop(1,'#5c2849');
+   g.fillStyle=gr;g.fillRect(0,0,w,h);
+  });
+  scene.fog=new THREE.FogExp2('#192452',.052);
+  camera.position.set(0,.4,9.5);
+
+  // Three-point warm fiesta lighting for real shading and depth
+  scene.add(new THREE.HemisphereLight(0x9fb4ff,0x3d1936,.75));
+  const keyLight=new THREE.DirectionalLight(0xffe1a8,1.35);
+  keyLight.position.set(4,7,6);scene.add(keyLight);
+  const rimLight=new THREE.DirectionalLight(0xff4f8b,.9);
+  rimLight.position.set(-5,-2,-4);scene.add(rimLight);
+  const centerGlow=new THREE.PointLight(0xffb84d,1.8,18);
+  centerGlow.position.set(0,3.2,2.5);scene.add(centerGlow);
+
+  // Detailed papel picado texture with border frame, diamond lattice, and marigold cutout
+  const tex=canvasTex(256,192,(g,w,h)=>{
+   g.fillStyle='#fff';g.fillRect(0,0,w,h);
+   g.globalCompositeOperation='destination-out';
+   // Outer lace border
+   for(let x=12;x<w-8;x+=16){
+    g.beginPath();g.arc(x,12,3.5,0,7);g.fill();
+    g.beginPath();g.arc(x,h-20,3.5,0,7);g.fill();
+   }
+   for(let y=24;y<h-24;y+=16){
+    g.beginPath();g.arc(12,y,3.5,0,7);g.fill();
+    g.beginPath();g.arc(w-12,y,3.5,0,7);g.fill();
+   }
+   // Inner diamond filigree
+   for(let y=34;y<h-32;y+=22){
+    for(let x=32;x<w-24;x+=24){
+     if(Math.abs(x-w/2)<44&&Math.abs(y-h/2+6)<38)continue;
+     g.beginPath();g.moveTo(x,y-7);g.lineTo(x+7,y);g.lineTo(x,y+7);g.lineTo(x-7,y);g.fill();
+    }
+   }
+   // Central floral rosette
+   for(let i=0;i<12;i++){
+    const a=i/12*Math.PI*2;
+    g.beginPath();g.ellipse(w/2+Math.cos(a)*20,h/2-6+Math.sin(a)*20,10,4.5,a,0,7);g.fill();
+   }
+   g.beginPath();g.arc(w/2,h/2-6,7,0,7);g.fill();
+   // Scalloped bottom fringe
+   for(let x=0;x<=w;x+=20){g.beginPath();g.arc(x,h,10,0,7);g.fill()}
+  });
+
+  // Curved banner geometry so flags billow in 3D space instead of looking like flat cards
+  const geo=new THREE.PlaneGeometry(1.15,.86,8,6);
+  const posAttr=geo.attributes.position;
+  for(let i=0;i<posAttr.count;i++){
+   const x=posAttr.getX(i),y=posAttr.getY(i);
+   posAttr.setZ(i,Math.sin((x+.575)*Math.PI)*.14 - Math.cos(y*3)*.04);
+  }
+  geo.computeVertexNormals();
+
+  const cols=['#FF4D29','#FFC324','#1CE0CC','#FF4785','#FFF3D6','#A86BFF','#FF7B29'];
+  const flags=[];
+  for(let i=0;i<85;i++){
+   const mat=new THREE.MeshStandardMaterial({
+    color:cols[i%cols.length],
+    map:tex,
+    alphaTest:.45,
+    side:THREE.DoubleSide,
+    roughness:.52,
+    metalness:.06
+   });
+   const f=new THREE.Mesh(geo,mat);
+   const z=-9+Math.random()*14.5;
+   f.userData={
+    sp:.75+Math.random()*1.1,
+    ph:Math.random()*6.28,
+    sw:.35+Math.random()*.7,
+    x0:(Math.random()-.5)*13,
+    y0:4+Math.random()*15,
+    rx:(Math.random()-.5)*.8,
+    ry:Math.random()*3.14
+   };
+   f.position.z=z;
+   scene.add(f);
+   flags.push(f);
+  }
+
+  // Multi-depth festoon string lights with real catenary wires and glowing halos
+  const haloTex=glowSpriteTex();
+  const bulbs=[];
+  const stringRows=[
+   {z:2.2,y:3.6,span:9.5,sag:.65,count:12},
+   {z:-1.8,y:4.2,span:12,sag:.85,count:15},
+   {z:-5.8,y:4.8,span:15,sag:1.05,count:16}
+  ];
+  stringRows.forEach(row=>{
+   const pts=[];
+   for(let s=0;s<=24;s++){
+    const u=s/24*2-1;
+    pts.push(new THREE.Vector3(u*(row.span/2), row.y - row.sag*(1-u*u), row.z));
+   }
+   const curve=new THREE.CatmullRomCurve3(pts);
+   scene.add(new THREE.Mesh(
+    new THREE.TubeGeometry(curve,24,.018,5,false),
+    new THREE.MeshBasicMaterial({color:'#13162b'})
+   ));
+   for(let i=0;i<row.count;i++){
+    const t=i/(row.count-1);
+    const p=curve.getPoint(t);
+    const bulb=new THREE.Mesh(
+     new THREE.SphereGeometry(.085,12,12),
+     new THREE.MeshBasicMaterial({color:'#FFE29A'})
+    );
+    bulb.position.copy(p).add(new THREE.Vector3(0,-.08,0));
+    const halo=new THREE.Sprite(new THREE.SpriteMaterial({
+     map:haloTex,color:'#FFB84D',transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false
+    }));
+    halo.scale.set(.85,.85,1);
+    bulb.add(halo);
+    scene.add(bulb);
+    bulbs.push({bulb,halo,phase:i*.85+row.z});
+   }
+  });
+
+  // Floating warm bokeh embers
+  const emberGeo=new THREE.BufferGeometry(),ePos=[];
+  for(let i=0;i<90;i++)ePos.push((Math.random()-.5)*14,(Math.random()-.5)*10,-6+Math.random()*12);
+  emberGeo.setAttribute('position',new THREE.Float32BufferAttribute(ePos,3));
+  const embers=new THREE.Points(emberGeo,new THREE.PointsMaterial({
+   map:haloTex,color:'#FFCA66',size:.28,transparent:true,opacity:.65,blending:THREE.AdditiveBlending,depthWrite:false
+  }));
+  scene.add(embers);
+
+  return t=>{
+   flags.forEach(f=>{
+    const u=f.userData;
+    f.position.y=10.5-((10.5-u.y0+t*u.sp*2.1)%19);
+    f.position.x=u.x0+Math.sin(t*1.35+u.ph)*u.sw;
+    f.rotation.set(
+     u.rx+Math.cos(t*1.3+u.ph)*.45,
+     u.ry+Math.sin(t*1.5+u.ph)*1.25,
+     Math.sin(t*1.9+u.ph)*.48
+    );
+   });
+   bulbs.forEach(({bulb,halo,phase})=>{
+    const pulse=.75+.25*Math.sin(t*3.8+phase);
+    bulb.material.color.setHSL(.105,1,.52+.16*pulse);
+    halo.material.opacity=.55+.35*pulse;
+    halo.scale.setScalar(.7+.25*pulse);
+   });
+   embers.position.y=Math.sin(t*.7)*.25;
+   const k=ease(t/4.8);
+   camera.position.set(Math.sin(t*.45)*.35, .3+Math.sin(t*.6)*.18, 9.8-k*2.1);
+   camera.lookAt(0,.15,0);
+  };
+ },
+
+ dive(scene,camera){
+  scene.background=new THREE.Color('#070404');
+  scene.fog=new THREE.FogExp2('#070404',.045);
+
+  // High-detail brick texture + matching height bumpMap for real mortar grooves and surface grain
+  const brickColor=canvasTex(512,512,(g,w,h)=>{
+   g.fillStyle='#140b09';g.fillRect(0,0,w,h);
+   const rows=16,cols=6,bh=h/rows,bw=w/cols;
+   for(let r=0;r<rows;r++){
+    for(let c=-1;c<=cols;c++){
+     const x=c*bw+(r%2?bw*.5:0),y=r*bh;
+     const hue=6+Math.random()*10,sat=38+Math.random()*22,lit=13+Math.random()*13;
+     g.fillStyle=`hsl(${hue},${sat}%,${lit}%)`;
+     g.fillRect(x+3,y+3,bw-6,bh-6);
+     // Weathering & soot specks on each brick
+     for(let s=0;s<6;s++){
+      g.fillStyle=Math.random()>.5?'rgba(0,0,0,.14)':'rgba(255,190,150,.06)';
+      g.fillRect(x+4+Math.random()*(bw-10),y+4+Math.random()*(bh-10),3+Math.random()*6,2+Math.random()*3);
+     }
+    }
+   }
+  });
+  const brickBump=canvasTex(512,512,(g,w,h)=>{
+   g.fillStyle='#151515';g.fillRect(0,0,w,h); // deep mortar
+   const rows=16,cols=6,bh=h/rows,bw=w/cols;
+   for(let r=0;r<rows;r++){
+    for(let c=-1;c<=cols;c++){
+     const x=c*bw+(r%2?bw*.5:0),y=r*bh;
+     g.fillStyle='#d8d8d8';
+     g.fillRect(x+3,y+3,bw-6,bh-6);
+     for(let s=0;s<6;s++){
+      g.fillStyle=Math.random()>.5?'#bbb':'#eee';
+      g.fillRect(x+4+Math.random()*(bw-10),y+4+Math.random()*(bh-10),3+Math.random()*6,2+Math.random()*3);
+     }
+    }
+   }
+  });
+  [brickColor,brickBump].forEach(t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3.5,5)});
+
+  const wall=new THREE.Mesh(
+   new THREE.PlaneGeometry(20,28),
+   new THREE.MeshStandardMaterial({map:brickColor,bumpMap:brickBump,bumpScale:.07,roughness:.88,metalness:.05})
+  );
+  scene.add(wall);
+
+  // Subtle moody bar-alley ambience + dual colored neon point lights + rim light
+  scene.add(new THREE.AmbientLight(0x281822,.22));
+  const rim=new THREE.PointLight(0x4a68b8,.8,22);
+  rim.position.set(-5,5,5);scene.add(rim);
+
+  const pinkLight=new THREE.PointLight(0xff2644,0,16);
+  pinkLight.position.set(0,1.4,1.9);scene.add(pinkLight);
+  const limeLight=new THREE.PointLight(0x7dff4d,0,10);
+  limeLight.position.set(.7,2.2,1.5);scene.add(limeLight);
+
+  const group=new THREE.Group();
+
+  // Backing dark metal frame mounted off the brick wall for physical depth & shadow separation
+  const frameMat=new THREE.MeshStandardMaterial({color:'#161418',roughness:.45,metalness:.8});
+  const backingRing=new THREE.Mesh(new THREE.TorusGeometry(2.15,.08,10,72),frameMat);
+  backingRing.position.set(0,1,.14);group.add(backingRing);
+  [[-1.55,2.15],[1.55,2.15],[-1.55,-.15],[1.55,-.15]].forEach(([sx,sy])=>{
+   const standoff=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.34,8),frameMat);
+   standoff.rotation.x=Math.PI/2;standoff.position.set(sx,sy,.17);group.add(standoff);
+  });
+
+  // Unlit dark rubber electrode caps where neon tubes bend into the wall
+  const capMat=new THREE.MeshStandardMaterial({color:'#111',roughness:.7});
+  const addCap=(x,y,z=.36)=>{
+   const cap=new THREE.Mesh(new THREE.CylinderGeometry(.065,.065,.12,10),capMat);
+   cap.rotation.x=Math.PI/2;cap.position.set(x,y,z);group.add(cap);
+  };
+
+  // Multi-layered neon tubes (bright white-hot core + saturated inner glow + wide atmospheric halo)
+  const corePink=new THREE.MeshBasicMaterial({color:'#ffe8ec'});
+  const midPink=new THREE.MeshBasicMaterial({color:'#ff2947',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+  const outerPink=new THREE.MeshBasicMaterial({color:'#ff1438',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+
+  const addNeonSeg=(a,b,coreM,midM,outM)=>{
+   const curve=new THREE.LineCurve3(a,b);
+   group.add(new THREE.Mesh(new THREE.TubeGeometry(curve,4,.042,10,false),coreM));
+   group.add(new THREE.Mesh(new THREE.TubeGeometry(curve,4,.11,10,false),midM));
+   group.add(new THREE.Mesh(new THREE.TubeGeometry(curve,4,.28,10,false),outM));
+  };
+
+  const P=(x,y,z=.44)=>new THREE.Vector3(x,y,z);
+  const segs=[
+   [P(-1.15,2.25),P(0,.88)],
+   [P(0,.88),P(1.15,2.25)],
+   [P(-1.15,2.25),P(1.15,2.25)],
+   [P(0,.88),P(0,-.25)],
+   [P(-.68,-.25),P(.68,-.25)]
+  ];
+  segs.forEach(([a,b])=>{
+   addNeonSeg(a,b,corePink,midPink,outerPink);
+   addCap(a.x,a.y,.34);addCap(b.x,b.y,.34);
+  });
+
+  // Outer neon border ring
+  [[.045,corePink],[.12,midPink],[.32,outerPink]].forEach(([r,mat])=>{
+   const m=new THREE.Mesh(new THREE.TorusGeometry(2.15,r,10,96),mat);
+   m.position.set(0,1,.42);group.add(m);
+  });
+
+  // Electric lime-green cocktail olive + toothpick accent for rich color contrast!
+  const coreLime=new THREE.MeshBasicMaterial({color:'#eaffde'});
+  const midLime=new THREE.MeshBasicMaterial({color:'#7dff4d',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+  const outerLime=new THREE.MeshBasicMaterial({color:'#4be822',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+
+  [[.038,coreLime],[.1,midLime],[.24,outerLime]].forEach(([r,mat])=>{
+   const olive=new THREE.Mesh(new THREE.TorusGeometry(.19,r,10,28),mat);
+   olive.position.set(.42,1.82,.48);group.add(olive);
+  });
+  addNeonSeg(P(.15,1.48,.48),P(.74,2.24,.48),coreLime,midLime,outerLime);
+
+  group.position.y=.85;group.scale.setScalar(.86);
+  scene.add(group);
+
+  // Subtle floating dust motes illuminated by the neon sign
+  const dustGeo=new THREE.BufferGeometry(),dPos=[];
+  for(let i=0;i<70;i++)dPos.push((Math.random()-.5)*7,(Math.random()-.3)*6,.4+Math.random()*4);
+  dustGeo.setAttribute('position',new THREE.Float32BufferAttribute(dPos,3));
+  const dustMat=new THREE.PointsMaterial({map:glowSpriteTex(),color:'#ff7a8a',size:.12,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+  scene.add(new THREE.Points(dustGeo,dustMat));
+
+  let lvl=0,next=0;
+  return t=>{
+   if(t>next){
+    next=t+.045+Math.random()*.075;
+    lvl=t<.42?0:t<1.65?(Math.random()>.42?1:.06):(Math.random()>.96?.3:1);
+   }
+   const active=.08+.92*lvl;
+   corePink.color.setRGB(.22+.78*lvl,.05+.86*lvl,.08+.84*lvl);
+   midPink.opacity=.55*lvl;
+   outerPink.opacity=.32*lvl;
+
+   const limeLvl=t<.65?0:(t<1.8?(Math.random()>.5?1:.1):lvl);
+   coreLime.color.setRGB(.06+.86*limeLvl,.2+.8*limeLvl,.05+.82*limeLvl);
+   midLime.opacity=.55*limeLvl;
+   outerLime.opacity=.3*limeLvl;
+
+   pinkLight.intensity=3.4*lvl;
+   limeLight.intensity=1.6*limeLvl;
+   dustMat.opacity=.45*lvl;
+
+   const k=ease(t/4.6);
+   camera.position.set(Math.sin(t*.5)*.22, .55+k*.35, 9.6-k*2.9);
+   camera.lookAt(0,.65,0);
+  };
+ },
+
+ roof(scene,camera){
+  // Rich multi-stop twilight horizon sky
+  scene.background=canvasTex(4,512,(g,w,h)=>{
+   const gr=g.createLinearGradient(0,0,0,h);
+   gr.addColorStop(0,'#060517');
+   gr.addColorStop(.35,'#19133d');
+   gr.addColorStop(.68,'#4d2966');
+   gr.addColorStop(.88,'#b55475');
+   gr.addColorStop(1,'#f29b6e');
+   g.fillStyle=gr;g.fillRect(0,0,w,h);
+  });
+  scene.fog=new THREE.FogExp2('#2e1c4d',.017);
+
+  // Twilight hemisphere + warm sunset rim light so every skyscraper has crisp lit & shadowed faces
+  scene.add(new THREE.HemisphereLight(0x8878d8,0x140d29,.65));
+  const sunsetRim=new THREE.DirectionalLight(0xff9466,1.45);
+  sunsetRim.position.set(-18,12,-45);scene.add(sunsetRim);
+  const coolFill=new THREE.DirectionalLight(0x5268d9,.55);
+  coolFill.position.set(16,20,18);scene.add(coolFill);
+
+  // Glowing horizon sun/moon aura + horizon haze band
+  const sunHalo=new THREE.Sprite(new THREE.SpriteMaterial({
+   map:glowSpriteTex(),color:'#ff9d6c',transparent:true,opacity:.65,blending:THREE.AdditiveBlending,depthWrite:false,fog:false
+  }));
+  sunHalo.position.set(-12,6,-68);sunHalo.scale.set(55,32,1);scene.add(sunHalo);
+
+  // High-contrast architectural window grid texture
+  const win=canvasTex(128,256,(g,w,h)=>{
+   g.fillStyle='#090717';g.fillRect(0,0,w,h);
+   for(let r=0;r<24;r++){
+    const floorLit=Math.random()<.78;
+    for(let c=0;c<8;c++){
+     if(floorLit&&Math.random()<.58){
+      const roll=Math.random();
+      g.fillStyle=roll<.65?'#ffd98e':(roll<.88?'#a8dcff':'#ff9eb5');
+      g.fillRect(6+c*15,4+r*10.5,9,6);
+     }
+    }
+   }
+  });
+  win.wrapS=win.wrapT=THREE.RepeatWrapping;
+
+  const blds=[],beacons=[];
+  const towerColors=['#17132e','#1e183b','#251c45','#141129'];
+  for(let i=0;i<165;i++){
+   const w=.95+Math.random()*1.85;
+   const h=2.5+Math.pow(Math.random(),1.45)*18.5;
+   const d=.95+Math.random()*1.85;
+   const wTex=win.clone();wTex.needsUpdate=true;
+   wTex.repeat.set(Math.max(1,Math.round(w)),Math.max(1,Math.round(h/2.5)));
+
+   const mat=new THREE.MeshStandardMaterial({
+    color:towerColors[i%towerColors.length],
+    emissive:'#ffffff',
+    emissiveMap:wTex,
+    emissiveIntensity:0,
+    roughness:.45,
+    metalness:.35
+   });
+   const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+   const bx=(Math.random()-.5)*56;
+   const bz=-5-Math.random()*56;
+   b.position.set(bx,h/2,bz);
+   b.userData.delay=.25+Math.random()*2.5;
+   scene.add(b);
+   blds.push(b);
+
+   // Add rooftop spires & blinking aviation beacons on tall towers
+   if(h>11.5){
+    const spireH=1.2+Math.random()*1.8;
+    const spire=new THREE.Mesh(
+     new THREE.CylinderGeometry(.02,.06,spireH,6),
+     new THREE.MeshBasicMaterial({color:'#382d63'})
+    );
+    spire.position.set(bx,h+spireH/2,bz);
+    scene.add(spire);
+
+    const beacon=new THREE.Sprite(new THREE.SpriteMaterial({
+     map:glowSpriteTex(),color:'#ff3b5c',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false
+    }));
+    beacon.position.set(bx,h+spireH,bz);
+    beacon.scale.set(.85,.85,1);
+    scene.add(beacon);
+    beacons.push({beacon,phase:Math.random()*6.28});
+   }
+  }
+
+  // Reflective dark avenue grid on the ground plane
+  const roadTex=canvasTex(256,256,(g,w,h)=>{
+   g.fillStyle='#0c091c';g.fillRect(0,0,w,h);
+   g.strokeStyle='rgba(255,195,120,.16)';g.lineWidth=3;
+   g.strokeRect(2,2,w-4,h-4);
+   g.strokeStyle='rgba(140,180,255,.1)';g.lineWidth=1;
+   g.beginPath();g.moveTo(w/2,0);g.lineTo(w/2,h);g.moveTo(0,h/2);g.lineTo(w,h/2);g.stroke();
+  });
+  roadTex.wrapS=roadTex.wrapT=THREE.RepeatWrapping;roadTex.repeat.set(24,24);
+  const ground=new THREE.Mesh(
+   new THREE.PlaneGeometry(220,220),
+   new THREE.MeshStandardMaterial({map:roadTex,roughness:.35,metalness:.5})
+  );
+  ground.rotation.x=-Math.PI/2;scene.add(ground);
+
+  // Glowing starfield with soft circular star sprites
+  const sg=new THREE.BufferGeometry(),pos=[];
+  for(let i=0;i<650;i++){
+   pos.push((Math.random()-.5)*170, 22+Math.random()*58, -55-Math.random()*35);
+  }
+  sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  const sm=new THREE.PointsMaterial({
+   map:glowSpriteTex(),color:0xfff6e5,size:.55,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false
+  });
+  scene.add(new THREE.Points(sg,sm));
+
+  return t=>{
+   blds.forEach(b=>b.material.emissiveIntensity=clamp01((t-b.userData.delay)*1.8)*1.15);
+   beacons.forEach(({beacon,phase})=>{
+    const blink=Math.max(0,Math.sin(t*4.5+phase));
+    beacon.material.opacity=clamp01((t-1.0)/1.5)*(blink*blink)*.95;
+   });
+   sm.opacity=clamp01((t-1.4)/2.2)*.95;
+   const k=ease(t/4.7),y=1.4+k*14.5;
+   camera.position.set(Math.sin(t*.28)*2.2, y, 10.5-k*1.8);
+   camera.lookAt(0, y*.6, -32);
+  };
+ }
+};
+
+let arrivalRun=null;
+async function playArrival(){
+ const el=document.getElementById('arrival');
+ if(arrivalRun)arrivalRun.stop(true);
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches||!webglOK())return;
+ try{await loadThree()}catch(e){return}
+ const v=V();el.hidden=false;el.className='arrival';el.dataset.aVenue=v.key;
+ el.innerHTML=`<button class="a-skip" type="button">Skip</button><div class="a-text"><div class="a-kind">${v.kind}</div><div class="a-name" style="font-family:${v.theme.display}">${v.name}</div></div>`;
+ const w=el.clientWidth,h=el.clientHeight;
+ if(!w||!h){el.hidden=true;el.innerHTML='';return}
+ const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(w,h,false);
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=1.12;
+ el.prepend(renderer.domElement);
+ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(55,w/h,.1,250);
+ const update=SCENES[v.key](scene,camera);
+ const text=el.querySelector('.a-text'),t0=performance.now(),DUR=5000;
+ let raf,stopped=false;
+ const stop=immediate=>{
+  if(stopped)return;stopped=true;cancelAnimationFrame(raf);arrivalRun=null;el.classList.add('out');
+  setTimeout(()=>{
+   scene.traverse(o=>{
+    if(o.geometry)o.geometry.dispose();
+    if(o.material)[].concat(o.material).forEach(m=>{['map','emissiveMap','bumpMap'].forEach(k=>m[k]&&m[k].dispose());m.dispose()});
+   });
+   if(scene.background&&scene.background.dispose)scene.background.dispose();
+   renderer.dispose();try{renderer.forceContextLoss()}catch(e){}
+   if(!arrivalRun){el.hidden=true;el.innerHTML='';el.className='arrival'}
+  },immediate?0:650);
+ };
+ el.querySelector('.a-skip').addEventListener('click',()=>stop());
+ arrivalRun={stop};
+ const frame=now=>{const t=(now-t0)/1000;update(t);renderer.render(scene,camera);
+  if(t>1.1)text.classList.add('show');
+  if(now-t0>DUR){stop();return}raf=requestAnimationFrame(frame)};
+ raf=requestAnimationFrame(frame);
+}
+
+enterVenue(0);render();playArrival();
 </script>
 </body>
 </html>
